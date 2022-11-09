@@ -9,7 +9,11 @@
 
 <Graphs xmlns="" appname="gol">
     <GraphType id="gol_type">
-        <Properties></Properties>
+        <Properties>
+            <![CDATA[ 
+            uint8_t maxGen = 10
+            ]]>
+        </Properties>
         <MessageTypes>
             <MessageType id="small_talk">
                 <Message>
@@ -17,7 +21,8 @@
                     bool alive; /* Whether or not the speaker is currently alive. */
                     bool id; /* Holds the identification of the speaker. */
                     bool even; /* Holds the current generation (even numbered or uneven numbered) */
-                    ]]>x
+                    bool done; /* Holds whether the sender has reached the last generation. */
+                    ]]>
                 </Message>
             </MessageType>
         </MessageTypes>
@@ -26,18 +31,18 @@
                 <Properties>
                     <![CDATA[ 
                     bool alive; /* The starting state of the node. */
-                    uint_8 id; /* The identification of the number. */
+                    uint8_t id; /* The identification of the number. */
                     ]]>
                 </Properties>
                 <State>
                     <![CDATA[ 
                     bool alive; /* Holds he current state of the node. */
-                    bool sendMessage = true; /* This field is 1 when a message is received. */
                     bool even = true; /* Holds the current generation of the node (even numbered or uneven numbered) */
-                    uint_8 gen = 0; /* Increments with each update */
+                    bool done = false;
+                    uint8_t gen = 0; /* Increments with each update */
 
-                    std::vector<uint8_t> conversations = {0, 0}; /* Tracks the amount of neighbours having replied at even and uneven generations */
-                    std::vector<uint8_t> livingNeighbours = {0, 0}; /* Tracks the amount of living neighbours */
+                    uint8_t conversations[] = {0, 0}; /* Tracks the amount of neighbours having replied at even and uneven generations */
+                    uint8_t livingNeighbours[] = {0, 0}; /* Tracks the amount of living neighbours */
                     ]]>
                 </State>
                 <OutputPin name="sender" messageTypeID="small_talk">
@@ -46,34 +51,13 @@
                         MSG(alive) = DEVICESTATE(alive);
                         MSG(id) = DEVICEPROPERTIES(id);
                         MSG(even) = DEVICESTATE(even);
-
-                        DEVICESTATE(sendMessage) = false;
+                        MSG(bool) = DEVICESTATE(bool);
                         ]]>
                     </OnSend>
                 </OutputPin>
                 <InputPin name="receiver" messageTypeID="small_talk">
                     <OnReceive>
-                        <![CDATA[ 
-                        #include <vector>
-    
-                        void rules(uint8_t live_neighbors) {
-                            if (DEVICESTATE(alive)) {
-                                if (live_neighbors < 1) DEVICESTATE(alive) = false;
-                            }
-                            else {
-                                if (live_neighbors > 1) DEVICESTATE(alive) = true;
-                            }
-                        }
-
-                        void update(uint8_t 0_1) {
-                            rules(DEVICESTATE(livingNeighbours[0_1])); /* Applies the rules of the game. */
-                            DEVICESTATE(gen) = DEVICESTATE(gen) + 1;
-                            DEVICESTATE(even) = 0_1; /* Switches the state of our node. */
-                            DEVICESTATE(conversations[0_1]) = 0;
-                            DEVICESTATE(livingNeighbours[0_1]) = 0;
-                            DEVICESTATE(sendMessage) = true
-                        }
-                        
+                        <![CDATA[                         
                         if (MSG(even)) {
                             DEVICESTATE(convations[0]) ++;
                             DEVICESTATE(livingNeighbours[0]) += MSG(alive);
@@ -82,27 +66,45 @@
                             DEVICESTATE(convations[1]) ++;
                             DEVICESTATE(livingNeighbours[1]) += MSG(alive);
                         }
-
-                        /* Once updated, check if we can update yet */
-                        if (DEVICESTATE(even) && DEVICESTATE(conversations[0] >= 2) {
-                            update(0)
-                        }
-                        if (!DEVICESTATE(even) && DEVICESTATE(converations[1] >= 2) {
-                            update(1)
-                        }
                         ]]>
                     </OnReceive>
                 </InputPin>
                 <ReadyToSend>
                     <![CDATA[ 
-                    if (DEVICESTATE(sendMessage)) RTS(sender);
+                    void rules(uint8_t live_neighbors) {
+                        if (DEVICESTATE(alive)) {
+                            if (live_neighbors < 1) DEVICESTATE(alive) = false;
+                        }
+                        else {
+                            if (live_neighbors > 1) DEVICESTATE(alive) = true;
+                        }
+                    }
+
+                    void update(uint8_t cycle) {
+                        rules(DEVICESTATE(livingNeighbours[cycle])); /* Applies the rules of the game. */
+                        DEVICESTATE(gen) = DEVICESTATE(gen) + 1;
+                        DEVICESTATE(even) = cycle; /* Switches the state of our node. */
+                        DEVICESTATE(conversations[cycle]) = 0;
+                        DEVICESTATE(livingNeighbours[cycle]) = 0;
+                        if (DEVICESTATE(gen) >= GRAPHPROPERTIES(maxGen)) {
+                            DEVICESTATE(done) = true
+                        } else {
+                            RTS(sender)
+                        }
+                    }
+
+                    /* Once updated, check if we can update yet */
+                    if (DEVICESTATE(even) && DEVICESTATE(conversations[0] >= 2) {
+                        update(0)
+                    }
+                    if (!DEVICESTATE(even) && DEVICESTATE(converations[1] >= 2) {
+                        update(1)
+                    }
                     ]]>
                 </ReadyToSend>
                 <OnInit>
                     <![CDATA[ 
                     DEVICESTATE(alive) = DEVICEPROPERTIES(alive);
-                    
-                    return DEVICESTATE(sendMessage);
                     ]]>
                 </OnInit>
                 <OnStop></OnStop>
@@ -118,7 +120,7 @@
                     <![CDATA[ 
                     if (!SUPSTATE(failed))
                     {
-
+                        if (MSG(done))
                     }
                     ]]>
                 </OnReceive>
