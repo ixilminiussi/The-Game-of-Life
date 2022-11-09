@@ -1,0 +1,174 @@
+\documentclass[a4paper]{article} 
+\input{style/head.tex}
+
+%-------------------------------
+%	TITLE VARIABLES (identify your work!)
+%-------------------------------
+
+\newcommand{\yourname}{Ixil D. Miniussi} % replace YOURNAME with your name
+\newcommand{\yournetid}{31124607} % replace YOURNETID with your NetID
+\newcommand{\youremail}{idm1u19@soton.ac.uk} % replace YOUREMAIL with your email
+\newcommand{\papertitle}{Conway's Game of Life implemented in POETS (draft)} % replace X with paper title
+
+\begin{document}
+
+%-------------------------------
+%	TITLE SECTION (do not modify unless you really need to)
+%-------------------------------
+\input{style/header.tex}
+
+%-------------------------------
+%	ASSIGNMENT CONTENT (add your responses)
+%-------------------------------
+
+\section*{Project description} % this is an example
+The goal of this project is to implement Conway's Game of Life\cite{enwiki:1115969544} within the POETS framework, each cell being handled by a separate node. Before going into the POETS implementation, a quick rundown of Conway's Game of Life.
+
+\subsection*{Conway's Game of Life}
+\subsubsection*{Background}
+``Conway's Game of Life'', also known as ``The Game of Life'' or ``Life'' is a cellular automaton from British mathematician John Horton Conway. The game has no goal or objective, and some people would say it also doesn't have a player, since the evolution of the game is fully determined from the first generation. The user's only agency is to devise the initial state depending on whichever goal he sets for himself. Since its initial conception, the game has been shown to be Turing complete\cite{rendell2002turing}, and users have been able to devise such programs within the game as logic gates, clocks, or even The Game of Life itself.
+
+\subsubsection*{Rules of the game}
+In its traditional form, The Game of Life is played within an infinite 2d grid, with each cell of the grid holding one of two values: alive, or dead. Each generation, the cells of the grid update themselves simultaneously based on their current state and that of their neighbours (horizontally, vertically, and diagonally adjacent cells):
+\begin{itemize}
+    \item A live cell with less than two live neighbours dies.
+    \item A live cell with two or three live neighbours lives on.
+    \item A live cell with more than three live neighbours dies.
+    \item A dead cell with exactly three live neighbours becomes alive.
+\end{itemize}
+
+There are semi popular alternative rules to the game, one of them imagining using hexagonal cells to increase the amount of neighbours, and we will consider exploring these later down the line. 
+
+\subsection*{Goals of our implementation}
+There are two ways of measuring a successful implementation.
+\par The first is functionality. As explained, the game of life is fully deterministic, which means separate runs of the same generation will always lead to the same result. Our implementation must be no different, and must lead to the same results as any other correct implementation of the game.
+\par The second part is scalability and speed. The purpose of the POETS platform is to handle massively parallel computations. Our implementation must make full use of the platform and avoid inefficient bottlenecks, and be capable of handling a large implementation of the game.
+
+\section*{POETS implementation}
+One of the main challenges of our implementation is to make full use of event-based computing and avoid bottlenecks. 
+\par The first obvious decision comes with handling each cell in its own POETS device, there can be a great many of them handled at once and we wouldn't be making full use of the POETS platform any other way. This unfortunately comes at the cost of changing the rules of the game slightly, as we can know longer virtualize a fully infinite grid, and will instead opt for a wrapping grid (as other implementations sometimes do). 
+\par Then, when handling iterations it is tempting to wait for all cells to be ready before moving on to the next generation. This means having an aggregator (most likely a supervisor) collecting from and notifying all cells each update. This would create a bottleneck which wouldn't scale well with the problem size. More importantly, our program does not need to be globally synchronized in order for it to be functionally correct. As such here is the implementation:
+
+\subsection*{Device/Cell algorithm}
+Each Cell is represented by a POETS device. The device retains the following information:
+\begin{itemize}
+    \item \emph{bool alive} - Holds true if the cell is alive, false otherwise.
+    \item \emph{bool even} - Holds whether it is on an even or uneven generation.
+    \item \emph{int generation} - Increases with each new update.
+    \item \emph{vector[int] conversations} - Holds 2 values counting the amount of conversations so far.
+    \item \emph{vector[int] livingNeighbours} - Holds 2 values counting the amount of living neighbours so far.
+    \item \emph{bool sendMessage} - Holds true if it wants to send a message.
+\end{itemize}
+
+Each node begins by sending a message called "small-talk" to its neighbours. Within each small-talk is contained the current living state and generation (whether it is even-numbered).
+When receiving a small-talk, the cell looks at whether it is coming from an even or uneven generation.
+
+\begin{algorithm}
+\caption{onReceive}
+\If {small-talk is from an even-numbered generation}
+\State increment conversations[0]
+
+\If {the talking cell is alive}
+also increment livingNeighbours[0]
+\EndIf
+
+\Else 
+\State increment conversations[1]
+
+\If {the talking cell is alive}
+also increment livingNeighbours[1]
+\EndIf
+
+\EndIf
+
+\State
+
+\If {the listening cell is on an even generation \textbf{and} conversations[0] == the total number of neighbours (currently 8)}
+\State apply the rules using livingNeighbours[0]
+\State set even to \emph{false}
+\State set sendMessage to \emph{true}
+\State reset conversations[0] to 0
+\State reset livingNeighbours[0] to 0
+\EndIf
+
+\If {the listening cell is on an uneven generation \textbf{and} conversations[1] == the total number of neighbours (currently 8)}
+\State apply the rules using livingNeighbours[1]
+\State set even to \emph{true}
+\State set sendMessage to \emph{true}
+\State reset conversations[1] to 0
+\State reset livingNeighbours[1] to 0
+\EndIf
+\end{algorithm}
+
+\subsection*{Design decisions}
+\subsubsection*{Why vectors?}
+The reason for using vectors is to handle the asynchronous nature of our algorithm. We want it to work using local synchronization without losing the functionality of global synchronization. 
+\par A scenario we are looking to avoid goes as follows:
+\begin{itemize}
+    \item Cell 1 (gen 1) sends small-talk to Cell 2 (gen 1.)
+    \item Cell 1 (gen 1) receives small-talk from Cell 2 (gen 1) and all its other neighbours (gen 1), and changes state (gen 2.)
+    \item Cell 1 (gen 2) sends small-talk \emph{again} to Cell 2 (gen 1) before it has yet to update.
+    \item Cell 2 (gen 1) receives small-talk from Cell 1 (gen 2) and all its other neighbours (gen 1) and updates into generation 2 using states from both generation 1 and 2, breaking the determinism of the game.
+\end{itemize}
+
+For that reason, we want to store the corresponding generation from each message. However, once we start storing said information, we notice that no two neighbors can be over one generation apart, since one cell necessarily needs its neighbours to be at least on the same generation before updating. 
+\par Knowing this, we only need to store 2 data points maximum per neighbouring cells. One way of doing this is by thinking of generations as even or uneven, and storing them accordingly in our \emph{conversations} and \emph{livingNeighbours} vectors.
+
+\subsubsection*{Livelocks and Deadlocks}
+On a micro level, POETS ensures that every single message eventually arrives at their destination, and as long as messages are being received, cells update and send new messages. As such there should be no deadlocks on a micro level. 
+\par On a macro level, there are certain iterations to The Game of Life which ends in repeating patterns or complete livelock. We are not looking to address these. More naturally, the user himself specifies how many generations he wants to run when running the simulation ($P$). Once cells reach that generation, the program ends.
+
+\section*{Requirements}
+\subsection*{Functional}
+The Game of Life is a fully deterministic game. The player has agency with how the first generation is laid out, but the unfolding ought to be the same with every run in every implementation of the rules. This version should be no different. A simple but time-inefficient way of verifying this requirement is to go through a run, and compare every iteration with a reference implementation. 
+\par To test more scenarios in less time however, we can also compare every $C$ generations, by assuming that if a generation is accurate, then so were the generations leading up to it.
+As such, our implementation makes testing easier by letting the user choose on launch the value of $C$, which will affect how often iterations get rendered. These iterations will get written onto a corresponding csv file to make it easier to compare with third-party implementations.
+
+\subsection*{Non-functional}
+Besides changing the rules, this implementation can only evolve in two directions: size and speed.
+\par For the purpose of this documentation, we will measure problem size as the total number of cells $N$.
+\par Speed can be seen either as the total number of cell updates per second $c.s^{-1}$ or the number of new generations per second $g.s^{-1}$. The relation between the two values can be written as 
+$$c.s^{-1} = g.s^{-1} * N$$ 
+A successful implementation would especially excel in scalability. There is an expectation with POETS that larger problems do not suffer the same slowdowns as other platforms.
+
+\section*{Experimentation}
+There are a number of assumptions that come with implementing a game like this on a platform meant for massively parallel computing. These assumptions relate to its supposed scalability and speed.
+
+\subsection*{Cheat Sheet}
+\begin{itemize}
+    \item $N$ - Problem size, i.e. total number of computed cells.
+    \item $P$ - Total generation count, user set.
+    \item $C$ - Rendered cycles, every $C$ generations, a generation is written to file.
+    \item $c.s^{-1}$ - Cell updates per second.
+    \item $g.s^{-1}$ - Generations per second. Due to the asynchronous nature of the algorithm this can be a little vague, but it is calculated as an average, i.e. $P$ divided by the execution time $T$.
+    \item $T$ - The execution time.
+\end{itemize}
+
+\subsection*{Problem}
+
+
+In particular we want to know:
+\begin{itemize}
+    \item How large can $N$ be before running out of memory?
+    \item How high is $g.s^{-1}$ at varying problem sizes? does $c.s^{-1}$ remain constant or increase through it all?
+    \item How do $g.s^{-1}$ evolve with fixed $N$ but varying $P$, specifically at lower $P$ values.
+\end{itemize}
+
+\subsection*{Methodology}
+Regardless of the test subject, to avoid using unnecessary computer power we set $C$ to $P$ as to write to file only the starting and final states.
+\begin{itemize}
+\item To test the maximum problem size, we increase $N$ progressively at a fixed but low $P$ while testing that functionality does not suffer. We also look for any sudden and/or abnormal decrease in $c.s^{-1}$.
+\item To test scalability, we pick a fixed and relatively large $P$ (500). We use an in-code implementation to test the total execution time $T$ [[*could timeset work within POETS?*]] and get the average $g.s^{-1}$ through $g.s^{-1} = \frac{N}{T}$, and $c.s^{-1} = g.s^{-1} * N$. We repeat at varying $N$ values and plot them accordingly.
+\item Finally, to get a closer look at the effects of smaller $P$ values on $g.s^{-1}$. We keep a fixed problem size and measure $g.s^{-1}$ with $P$ evolving in the 1 to 50 range.
+\end{itemize}
+
+\subsection*{Assumptions}
+Prior to testing, the maximum problem size is expected to be or be close to the maximum amount of devices supported by POETS. Since each cell is represented by exactly one device, one would assume that to be the limit.
+\par Scalability is expected to be optimal but not perfect, meaning $g.s^{-1}$ would slightly decrease with larger $N$ values, and therefor $c.s^{-1}$ would increase linearly with $N$. This is because although each cell only concerns with local synchronization, as the problem size increases we can expect some regions to fall behind more than one generation, which even with local synchronization would slow down the global system. The higher amount of messages being transferred would also reasonably cause some strain on the $c.s^{-1}$.
+\par Smaller $P$ values aren't expected to show much of a discrepancy with the scalability curve. Except perhaps causing more volatile results as we would no longer be averaging large generation counts.
+
+\subsection*{Results}
+
+\bibliography{Paper_summaries}
+
+\end{document}

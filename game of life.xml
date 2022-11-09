@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- RULES 
+    * A live cell dies if it has fewer than 2 neighbors
+    * A live cell with two or three live neighbors lives on
+    * A live cell with more than three live neighbors dies
+    * A dead cell will be brought back to live if it has 3 neighbors
+-->
+
+<Graphs xmlns="" appname="gol">
+    <GraphType id="gol_type">
+        <Properties></Properties>
+        <MessageTypes>
+            <MessageType id="small_talk">
+                <Message>
+                    <![CDATA[ 
+                    bool alive; /* Whether or not the speaker is currently alive. */
+                    bool id; /* Holds the identification of the speaker. */
+                    bool even; /* Holds the current generation (even numbered or uneven numbered) */
+                    ]]>x
+                </Message>
+            </MessageType>
+        </MessageTypes>
+        <DeviceTypes>
+            <DeviceType id="citizen">
+                <Properties>
+                    <![CDATA[ 
+                    bool alive; /* The starting state of the node. */
+                    uint_8 id; /* The identification of the number. */
+                    ]]>
+                </Properties>
+                <State>
+                    <![CDATA[ 
+                    bool alive; /* Holds he current state of the node. */
+                    bool sendMessage = true; /* This field is 1 when a message is received. */
+                    bool even = true; /* Holds the current generation of the node (even numbered or uneven numbered) */
+                    uint_8 gen = 0; /* Increments with each update */
+
+                    std::vector<uint8_t> conversations = {0, 0}; /* Tracks the amount of neighbours having replied at even and uneven generations */
+                    std::vector<uint8_t> livingNeighbours = {0, 0}; /* Tracks the amount of living neighbours */
+                    ]]>
+                </State>
+                <OutputPin name="sender" messageTypeID="small_talk">
+                    <OnSend>
+                        <![CDATA[ 
+                        MSG(alive) = DEVICESTATE(alive);
+                        MSG(id) = DEVICEPROPERTIES(id);
+                        MSG(even) = DEVICESTATE(even);
+
+                        DEVICESTATE(sendMessage) = false;
+                        ]]>
+                    </OnSend>
+                </OutputPin>
+                <InputPin name="receiver" messageTypeID="small_talk">
+                    <OnReceive>
+                        <![CDATA[ 
+                        #include <vector>
+    
+                        void rules(uint8_t live_neighbors) {
+                            if (DEVICESTATE(alive)) {
+                                if (live_neighbors < 1) DEVICESTATE(alive) = false;
+                            }
+                            else {
+                                if (live_neighbors > 1) DEVICESTATE(alive) = true;
+                            }
+                        }
+
+                        void update(uint8_t 0_1) {
+                            rules(DEVICESTATE(livingNeighbours[0_1])); /* Applies the rules of the game. */
+                            DEVICESTATE(gen) = DEVICESTATE(gen) + 1;
+                            DEVICESTATE(even) = 0_1; /* Switches the state of our node. */
+                            DEVICESTATE(conversations[0_1]) = 0;
+                            DEVICESTATE(livingNeighbours[0_1]) = 0;
+                            DEVICESTATE(sendMessage) = true
+                        }
+                        
+                        if (MSG(even)) {
+                            DEVICESTATE(convations[0]) ++;
+                            DEVICESTATE(livingNeighbours[0]) += MSG(alive);
+                        }
+                        else {
+                            DEVICESTATE(convations[1]) ++;
+                            DEVICESTATE(livingNeighbours[1]) += MSG(alive);
+                        }
+
+                        /* Once updated, check if we can update yet */
+                        if (DEVICESTATE(even) && DEVICESTATE(conversations[0] >= 2) {
+                            update(0)
+                        }
+                        if (!DEVICESTATE(even) && DEVICESTATE(converations[1] >= 2) {
+                            update(1)
+                        }
+                        ]]>
+                    </OnReceive>
+                </InputPin>
+                <ReadyToSend>
+                    <![CDATA[ 
+                    if (DEVICESTATE(sendMessage)) RTS(sender);
+                    ]]>
+                </ReadyToSend>
+                <OnInit>
+                    <![CDATA[ 
+                    DEVICESTATE(alive) = DEVICEPROPERTIES(alive);
+                    
+                    return DEVICESTATE(sendMessage);
+                    ]]>
+                </OnInit>
+                <OnStop></OnStop>
+            </DeviceType>
+        </DeviceTypes>
+        <SupervisorType id="id">
+            <Code></Code>
+            <State></State>
+            <OnInit></OnInit>
+            <OnStop></OnStop>
+            <SupervisorInPin id="" messageTypeID="small_talk">
+                <OnReceive>
+                    <![CDATA[ 
+                    if (!SUPSTATE(failed))
+                    {
+
+                    }
+                    ]]>
+                </OnReceive>
+            </SupervisorInPin>
+            <SupervisorOutPin messageTypeID="small_talk">
+                <OnSend></OnSend>
+                <ReadyToSend></ReadyToSend>
+            </SupervisorOutPin>
+        </SupervisorType>
+    </GraphType>
+
+    <GraphInstance id="gol_instance" graphTypeId="gol_type" P="5">
+        <DeviceInstances></DeviceInstances>
+        <EdgeInstances></EdgeInstances>
+    </GraphInstance>
+</Graphs>
