@@ -11,6 +11,7 @@
     <GraphType id="gol_type">
         <Properties>
             <![CDATA[ 
+            uint8_t cellCount = 5
             uint8_t maxGen = 10
             ]]>
         </Properties>
@@ -18,8 +19,7 @@
             <MessageType id="small_talk">
                 <Message>
                     <![CDATA[ 
-                    bool alive; /* Whether or not the speaker is currently alive. */
-                    bool id; /* Holds the identification of the speaker. */
+                    bool alive; /* Whether or not the speaker is currently alive. *
                     bool even; /* Holds the current generation (even numbered or uneven numbered) */
                     bool done; /* Holds whether the sender has reached the last generation. */
                     ]]>
@@ -31,7 +31,6 @@
                 <Properties>
                     <![CDATA[ 
                     bool alive; /* The starting state of the node. */
-                    uint8_t id; /* The identification of the number. */
                     ]]>
                 </Properties>
                 <State>
@@ -49,7 +48,6 @@
                     <OnSend>
                         <![CDATA[ 
                         MSG(alive) = DEVICESTATE(alive);
-                        MSG(id) = DEVICEPROPERTIES(id);
                         MSG(even) = DEVICESTATE(even);
                         MSG(bool) = DEVICESTATE(bool);
                         ]]>
@@ -82,7 +80,7 @@
 
                     void update(uint8_t cycle) {
                         rules(DEVICESTATE(livingNeighbours[cycle])); /* Applies the rules of the game. */
-                        DEVICESTATE(gen) = DEVICESTATE(gen) + 1;
+                        DEVICESTATE(gen) ++;
                         DEVICESTATE(even) = cycle; /* Switches the state of our node. */
                         DEVICESTATE(conversations[cycle]) = 0;
                         DEVICESTATE(livingNeighbours[cycle]) = 0;
@@ -111,16 +109,47 @@
             </DeviceType>
         </DeviceTypes>
         <SupervisorType id="id">
-            <Code></Code>
-            <State></State>
-            <OnInit></OnInit>
-            <OnStop></OnStop>
+            <Code>
+                <![CDATA[ 
+                #include <stdio.h> /* For writing an output file. */
+                ]]>
+            </Code>
+            <State>
+                <![CDATA[ 
+                /* Ominous */
+                bool failed = false;
+                bool finished = false;
+
+                /* Counter */
+                int finishedCells = 0;
+
+                /* Output file. */
+                FILE* resultFile;
+                ]]>
+            </State>
+            <OnInit>
+                <![CDATA[ 
+                SUPSTATE(resultFile) = fopen("ring_test_output", "w");
+                ]]>
+            </OnInit>
+            <OnStop>
+                <![CDATA[
+                fclose(SUPSTATE(resultFile));
+                ]]>
+            </OnStop>
             <SupervisorInPin id="" messageTypeID="small_talk">
                 <OnReceive>
                     <![CDATA[ 
                     if (!SUPSTATE(failed))
                     {
-                        if (MSG(done))
+                        if (MSG(done)) {
+                            SUPSTATE(finishedCells) ++;
+
+                            if (SUPSTATE(finishedCells) >= GRAPHPROPERTIES(cellCount)) {
+                                SUPSTATE(finished) = true;
+                                fprintf(SUPSTATE(resultFile), "1"); 
+                            }
+                        }
                     }
                     ]]>
                 </OnReceive>
@@ -132,8 +161,20 @@
         </SupervisorType>
     </GraphType>
 
-    <GraphInstance id="gol_instance" graphTypeId="gol_type" P="5">
-        <DeviceInstances></DeviceInstances>
-        <EdgeInstances></EdgeInstances>
+    <GraphInstance id="gol_instance" graphTypeId="gol_type" P="5,10">
+        <DeviceInstances>
+            <DevI id="0" type="citizen" P="{0}" />
+            <DevI id="1" type="citizen" P="{1}" />
+            <DevI id="2" type="citizen" P="{0}" />
+            <DevI id="3" type="citizen" P="{1}" />
+            <DevI id="4" type="citizen" P="{0}" />
+        </DeviceInstances>
+        <EdgeInstances>
+            <EdgeI path="1:receiver-0:sender" />
+            <EdgeI path="2:receiver-1:sender" />
+            <EdgeI path="3:receiver-2:sender" />
+            <EdgeI path="4:receiver-3:sender" />
+            <EdgeI path="0:receiver-4:sender" />
+        </EdgeInstances>
     </GraphInstance>
 </Graphs>
