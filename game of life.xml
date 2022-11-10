@@ -106,58 +106,58 @@
                     ]]>
                 </OnInit>
             </DeviceType>
-        </DeviceTypes>
-        <SupervisorType id="id">
-            <Code>
-                <![CDATA[ 
-                #include <stdio.h> /* For writing an output file. */
-                ]]>
-            </Code>
-            <State>
-                <![CDATA[ 
-                /* Ominous */
-                bool failed = false;
-                bool finished = false;
-
-                /* Counter */
-                int finishedCells = 0;
-
-                /* Output file. */
-                FILE* resultFile;
-                ]]>
-            </State>
-            <OnInit>
-                <![CDATA[ 
-                SUPSTATE(resultFile) = fopen("ring_test_output", "w");
-                ]]>
-            </OnInit>
-            <OnStop>
-                <![CDATA[
-                fclose(SUPSTATE(resultFile));
-                ]]>
-            </OnStop>
-            <SupervisorInPin id="" messageTypeId="small_talk">
-                <OnReceive>
+            <SupervisorType id="id">
+                <Code>
                     <![CDATA[ 
-                    if (!SUPSTATE(failed))
-                    {
-                        if (MSG(done)) {
-                            SUPSTATE(finishedCells) ++;
-
-                            if (SUPSTATE(finishedCells) >= GRAPHPROPERTIES(cellCount)) {
-                                SUPSTATE(finished) = true;
-                                fprintf(SUPSTATE(resultFile), "1"); 
+                    #include <stdio.h> /* For writing an output file. */
+                    ]]>
+                </Code>
+                <State>
+                    <![CDATA[ 
+                    /* Ominous */
+                    bool failed = false;
+                    bool finished = false;
+    
+                    /* Counter */
+                    int finishedCells = 0;
+    
+                    /* Output file. */
+                    FILE* resultFile;
+                    ]]>
+                </State>
+                <OnInit>
+                    <![CDATA[ 
+                    SUPSTATE(resultFile) = fopen("ring_test_output", "w");
+                    ]]>
+                </OnInit>
+                <OnStop>
+                    <![CDATA[
+                    fclose(SUPSTATE(resultFile));
+                    ]]>
+                </OnStop>
+                <SupervisorInPin id="" messageTypeId="small_talk">
+                    <OnReceive>
+                        <![CDATA[ 
+                        if (!SUPSTATE(failed))
+                        {
+                            if (MSG(done)) {
+                                SUPSTATE(finishedCells) ++;
+    
+                                if (SUPSTATE(finishedCells) >= GRAPHPROPERTIES(cellCount)) {
+                                    SUPSTATE(finished) = true;
+                                    fprintf(SUPSTATE(resultFile), "1"); 
+                                }
                             }
                         }
-                    }
-                    ]]>
-                </OnReceive>
-            </SupervisorInPin>
-            <SupervisorOutPin messageTypeId="small_talk">
-                <OnSend></OnSend>
-                <ReadyToSend></ReadyToSend>
-            </SupervisorOutPin>
-        </SupervisorType>
+                        ]]>
+                    </OnReceive>
+                </SupervisorInPin>
+                <SupervisorOutPin messageTypeId="small_talk">
+                    <OnSend></OnSend>
+                    <ReadyToSend></ReadyToSend>
+                </SupervisorOutPin>
+            </SupervisorType>
+        </DeviceTypes>
     </GraphType>
 
     <GraphInstance id="gol_instance" graphTypeId="gol_type" P="5,10">
