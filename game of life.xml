@@ -152,7 +152,7 @@
                         ]]>
                     </OnReceive>
                 </SupervisorInPin>
-                <SupervisorOutPin messageTypeId="small_talk">
+                <SupervisorOutPin id="" messageTypeId="small_talk">
                     <OnSend></OnSend>
                     <ReadyToSend></ReadyToSend>
                 </SupervisorOutPin>
