@@ -154,7 +154,6 @@
                 </SupervisorInPin>
                 <SupervisorOutPin id="" messageTypeId="small_talk">
                     <OnSend></OnSend>
-                    <ReadyToSend></ReadyToSend>
                 </SupervisorOutPin>
             </SupervisorType>
         </DeviceTypes>
