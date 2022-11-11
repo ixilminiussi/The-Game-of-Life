@@ -11,8 +11,8 @@
     <GraphType id="gol_type">
         <Properties>
             <![CDATA[ 
-            uint8_t cellCount = 5
-            uint8_t maxGen = 10
+            uint8_t cellCount = 5;
+            uint8_t maxGen = 10;
             ]]>
         </Properties>
         <MessageTypes>
@@ -85,18 +85,18 @@
                         DEVICESTATE(conversations[cycle]) = 0;
                         DEVICESTATE(livingNeighbours[cycle]) = 0;
                         if (DEVICESTATE(gen) >= GRAPHPROPERTIES(maxGen)) {
-                            DEVICESTATE(done) = true
+                            DEVICESTATE(done) = true;
                         } else {
-                            RTS(sender)
+                            RTS(sender);
                         }
                     }
 
                     /* Once updated, check if we can update yet */
                     if (DEVICESTATE(even) && DEVICESTATE(conversations[0] >= 2) {
-                        update(0)
+                        update(0);
                     }
                     if (!DEVICESTATE(even) && DEVICESTATE(converations[1] >= 2) {
-                        update(1)
+                        update(1);
                     }
                     ]]>
                 </ReadyToSend>
@@ -152,9 +152,6 @@
                         ]]>
                     </OnReceive>
                 </SupervisorInPin>
-                <SupervisorOutPin id="" messageTypeId="small_talk">
-                    <OnSend></OnSend>
-                </SupervisorOutPin>
             </SupervisorType>
         </DeviceTypes>
     </GraphType>
