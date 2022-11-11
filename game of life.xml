@@ -69,6 +69,9 @@
                 </InputPin>
                 <ReadyToSend>
                     <![CDATA[ 
+                    void rules(uint8_t live_neighbors);
+                    void update(uint8_t cycle);
+
                     void rules(uint8_t live_neighbors) {
                         if (DEVICESTATE(alive)) {
                             if (live_neighbors < 1) DEVICESTATE(alive) = false;
@@ -92,10 +95,10 @@
                     }
 
                     /* Once updated, check if we can update yet */
-                    if (DEVICESTATE(even) && DEVICESTATE(conversations[0] >= 2) {
+                    if (DEVICESTATE(even) && DEVICESTATE(conversations[0]) >= 2) {
                         update(0);
                     }
-                    if (!DEVICESTATE(even) && DEVICESTATE(converations[1] >= 2) {
+                    if (!DEVICESTATE(even) && DEVICESTATE(converations[1]) >= 2) {
                         update(1);
                     }
                     ]]>
