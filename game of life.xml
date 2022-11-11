@@ -37,11 +37,11 @@
                     <![CDATA[ 
                     bool alive; /* Holds he current state of the node. */
                     bool even = true; /* Holds the current generation of the node (even numbered or uneven numbered) */
-                    bool done = false;
+                    bool done = false; /* Holds true when the cell has reached final  */
                     uint8_t gen = 0; /* Increments with each update */
 
-                    uint8_t conversations[] = {0, 0}; /* Tracks the amount of neighbours having replied at even and uneven generations */
-                    uint8_t livingNeighbours[] = {0, 0}; /* Tracks the amount of living neighbours */
+                    uint8_t conversations[2] = {0, 0}; /* Tracks the amount of neighbours having replied at even and uneven generations */
+                    uint8_t livingNeighbours[2] = {0, 0}; /* Tracks the amount of living neighbours */
                     ]]>
                 </State>
                 <OutputPin name="sender" messageTypeId="small_talk">
@@ -57,11 +57,11 @@
                     <OnReceive>
                         <![CDATA[                         
                         if (MSG(even)) {
-                            DEVICESTATE(convations[0]) ++;
+                            DEVICESTATE(conversations[0]) ++;
                             DEVICESTATE(livingNeighbours[0]) += MSG(alive);
                         }
                         else {
-                            DEVICESTATE(convations[1]) ++;
+                            DEVICESTATE(conversations[1]) ++;
                             DEVICESTATE(livingNeighbours[1]) += MSG(alive);
                         }
                         ]]>
