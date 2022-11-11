@@ -61,7 +61,6 @@
                         DEVICESTATE(conversations[cycle]) = 0;
                         DEVICESTATE(livingNeighbours[cycle]) = 0;
                         if (DEVICESTATE(gen) >= GRAPHPROPERTIES(maxGen)) DEVICESTATE(done) = true;
-                        else RTS(sender);
                         
                         MSG(alive) = DEVICESTATE(alive);
                         MSG(even) = DEVICESTATE(even);
