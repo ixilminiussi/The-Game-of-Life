@@ -49,7 +49,7 @@
                         <![CDATA[ 
                         MSG(alive) = DEVICESTATE(alive);
                         MSG(even) = DEVICESTATE(even);
-                        MSG(bool) = DEVICESTATE(bool);
+                        MSG(done) = DEVICESTATE(done);
                         ]]>
                     </OnSend>
                 </OutputPin>
@@ -98,7 +98,7 @@
                     if (DEVICESTATE(even) && DEVICESTATE(conversations[0]) >= 2) {
                         update(0);
                     }
-                    if (!DEVICESTATE(even) && DEVICESTATE(converations[1]) >= 2) {
+                    if (!DEVICESTATE(even) && DEVICESTATE(conversations[1]) >= 2) {
                         update(1);
                     }
                     ]]>
