@@ -19,7 +19,7 @@
             <MessageType id="small_talk">
                 <Message>
                     <![CDATA[ 
-                    bool alive; /* Whether or not the speaker is currently alive. *
+                    bool alive; /* Whether or not the speaker is currently alive. */
                     bool even; /* Holds the current generation (even numbered or uneven numbered) */
                     bool done; /* Holds whether the sender has reached the last generation. */
                     ]]>
