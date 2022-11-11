@@ -19,9 +19,9 @@
             <MessageType id="small_talk">
                 <Message>
                     <![CDATA[ 
-                    bool alive; /* Whether or not the speaker is currently alive. */
-                    bool even; /* Holds the current generation (even numbered or uneven numbered) */
-                    bool done; /* Holds whether the sender has reached the last generation. */
+                    bool alive;
+                    bool even;
+                    bool done;
                     ]]>
                 </Message>
             </MessageType>
@@ -30,24 +30,23 @@
             <DeviceType id="citizen">
                 <Properties>
                     <![CDATA[ 
-                    bool alive; /* The starting state of the node. */
+                    bool alive;
                     ]]>
                 </Properties>
                 <State>
                     <![CDATA[ 
-                    bool alive; /* Holds he current state of the node. */
-                    bool even = true; /* Holds the current generation of the node (even numbered or uneven numbered) */
-                    bool done = false; /* Holds true when the cell has reached final  */
-                    uint8_t gen = 0; /* Increments with each update */
+                    bool alive;
+                    bool even = true;
+                    bool done = false;
+                    uint8_t gen = 0;
 
-                    uint8_t conversations[2] = {0, 0}; /* Tracks the amount of neighbours having replied at even and uneven generations */
-                    uint8_t livingNeighbours[2] = {0, 0}; /* Tracks the amount of living neighbours */
+                    uint8_t conversations[2] = {0, 0};
+                    uint8_t livingNeighbours[2] = {0, 0};
                     ]]>
                 </State>
                 <OutputPin name="sender" messageTypeId="small_talk">
                     <OnSend>
-                        <![CDATA[ 
-                        /* Updates our current state according to the rules */
+                        <![CDATA[
                         void rules(uint8_t live_neighbors) {
                             if (DEVICESTATE(alive)) {
                                 if (live_neighbors < 1) DEVICESTATE(alive) = false;
@@ -59,9 +58,9 @@
     
                         /* Updates all appropriate variables */
                         void update(uint8_t cycle) {
-                            rules(DEVICESTATE(livingNeighbours[cycle])); /* Applies the rules of the game. */
+                            rules(DEVICESTATE(livingNeighbours[cycle]));
                             DEVICESTATE(gen) ++;
-                            DEVICESTATE(even) = cycle; /* Switches the state of our node. */
+                            DEVICESTATE(even) = cycle;
                             DEVICESTATE(conversations[cycle]) = 0;
                             DEVICESTATE(livingNeighbours[cycle]) = 0;
                             if (DEVICESTATE(gen) >= GRAPHPROPERTIES(maxGen)) DEVICESTATE(done) = true;
@@ -93,7 +92,6 @@
                 </InputPin>
                 <ReadyToSend>
                     <![CDATA[ 
-                    /* Check that we have received all messages needed and send (unless we are past the max generation)
                     if (DEVICESTATE(gen) <= GRAPHPROPERTIES(maxGen)) {
                         if (DEVICESTATE(even) && DEVICESTATE(conversations[0]) >= 2) RTS(sender);
                         if (!DEVICESTATE(even) && DEVICESTATE(conversations[1]) >= 2) RTS(sender);
@@ -109,19 +107,16 @@
             <SupervisorType id="id">
                 <Code>
                     <![CDATA[ 
-                    #include <stdio.h> /* For writing an output file. */
+                    #include <stdio.h>
                     ]]>
                 </Code>
                 <State>
-                    <![CDATA[ 
-                    /* Ominous */
+                    <![CDATA[
                     bool failed = false;
                     bool finished = false;
     
-                    /* Counter */
                     int finishedCells = 0;
     
-                    /* Output file. */
                     FILE* resultFile;
                     ]]>
                 </State>
