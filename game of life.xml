@@ -64,14 +64,12 @@
                             DEVICESTATE(even) = cycle; /* Switches the state of our node. */
                             DEVICESTATE(conversations[cycle]) = 0;
                             DEVICESTATE(livingNeighbours[cycle]) = 0;
-                            if (DEVICESTATE(gen) >= GRAPHPROPERTIES(maxGen)) {
-                                DEVICESTATE(done) = true;
-                            } else {
-                                RTS(sender);
-                            }
+                            if (DEVICESTATE(gen) >= GRAPHPROPERTIES(maxGen)) DEVICESTATE(done) = true;
+                            else RTS(sender);
                         }
     
-                        update(!DEVICESTATE(even));
+                        if (DEVICESTATE(even)) update(0);
+                        else update(1);
                         
                         MSG(alive) = DEVICESTATE(alive);
                         MSG(even) = DEVICESTATE(even);
