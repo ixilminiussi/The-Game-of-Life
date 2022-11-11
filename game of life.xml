@@ -44,34 +44,24 @@
                     uint8_t livingNeighbours[2] = {0, 0};
                     ]]>
                 </State>
-                <SharedCode>
-                    <![CDATA[ 
-                    void rules(uint8_t live_neighbors) {
+                <OutputPin name="sender" messageTypeId="small_talk">
+                    <OnSend>
+                        <![CDATA[    
+                        uint8_t cycle = !DEVICESTATE(even);
+
                         if (DEVICESTATE(alive)) {
-                            if (live_neighbors < 1) DEVICESTATE(alive) = false;
+                            if (DEVICESTATE(livingNeighbours[cycle]) < 1) DEVICESTATE(alive) = false;
                         }
                         else {
-                            if (live_neighbors > 1) DEVICESTATE(alive) = true;
+                            if (DEVICESTATE(livingNeighbours[cycle]) > 1) DEVICESTATE(alive) = true;
                         }
-                    }
 
-                    /* Updates all appropriate variables */
-                    void update(uint8_t cycle) {
-                        rules(DEVICESTATE(livingNeighbours[cycle]));
                         DEVICESTATE(gen) ++;
                         DEVICESTATE(even) = cycle;
                         DEVICESTATE(conversations[cycle]) = 0;
                         DEVICESTATE(livingNeighbours[cycle]) = 0;
                         if (DEVICESTATE(gen) >= GRAPHPROPERTIES(maxGen)) DEVICESTATE(done) = true;
                         else RTS(sender);
-                    }
-                    ]]>
-                </SharedCode>
-                <OutputPin name="sender" messageTypeId="small_talk">
-                    <OnSend>
-                        <![CDATA[    
-                        if (DEVICESTATE(even)) update(0);
-                        else update(1);
                         
                         MSG(alive) = DEVICESTATE(alive);
                         MSG(even) = DEVICESTATE(even);
