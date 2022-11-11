@@ -28,31 +28,6 @@
         </MessageTypes>
         <DeviceTypes>
             <DeviceType id="citizen">
-                <SharedCode>
-                    <![CDATA[ 
-                    void rules(uint8_t live_neighbors) {
-                        if (DEVICESTATE(alive)) {
-                            if (live_neighbors < 1) DEVICESTATE(alive) = false;
-                        }
-                        else {
-                            if (live_neighbors > 1) DEVICESTATE(alive) = true;
-                        }
-                    }
-
-                    void update(uint8_t cycle) {
-                        rules(DEVICESTATE(livingNeighbours[cycle])); /* Applies the rules of the game. */
-                        DEVICESTATE(gen) ++;
-                        DEVICESTATE(even) = cycle; /* Switches the state of our node. */
-                        DEVICESTATE(conversations[cycle]) = 0;
-                        DEVICESTATE(livingNeighbours[cycle]) = 0;
-                        if (DEVICESTATE(gen) >= GRAPHPROPERTIES(maxGen)) {
-                            DEVICESTATE(done) = true;
-                        } else {
-                            RTS(sender);
-                        }
-                    }
-                    ]]>
-                </SharedCode>
                 <Properties>
                     <![CDATA[ 
                     bool alive; /* The starting state of the node. */
@@ -94,15 +69,42 @@
                 </InputPin>
                 <ReadyToSend>
                     <![CDATA[ 
-                    /* Once updated, check if we can update yet */
-                    if (DEVICESTATE(even) && DEVICESTATE(conversations[0]) >= 2) {
-                        update(0);
-                    }
-                    if (!DEVICESTATE(even) && DEVICESTATE(conversations[1]) >= 2) {
-                        update(1);
+                    /* Check that we have received all messages needed and send (unless we are past the max generation)
+                    if (DEVICESTATE(gen) <= GRAPHPROPERTIES(maxGen)) {
+                        if (DEVICESTATE(even) && DEVICESTATE(conversations[0]) >= 2) RTS(sender);
+                        if (!DEVICESTATE(even) && DEVICESTATE(conversations[1]) >= 2) RTS(sender);
                     }
                     ]]>
                 </ReadyToSend>
+                <OnSend>
+                    <![CDATA[ 
+                    /* Updates our current state according to the rules */
+                    void rules(uint8_t live_neighbors) {
+                        if (DEVICESTATE(alive)) {
+                            if (live_neighbors < 1) DEVICESTATE(alive) = false;
+                        }
+                        else {
+                            if (live_neighbors > 1) DEVICESTATE(alive) = true;
+                        }
+                    }
+
+                    /* Updates all appropriate variables */
+                    void update(uint8_t cycle) {
+                        rules(DEVICESTATE(livingNeighbours[cycle])); /* Applies the rules of the game. */
+                        DEVICESTATE(gen) ++;
+                        DEVICESTATE(even) = cycle; /* Switches the state of our node. */
+                        DEVICESTATE(conversations[cycle]) = 0;
+                        DEVICESTATE(livingNeighbours[cycle]) = 0;
+                        if (DEVICESTATE(gen) >= GRAPHPROPERTIES(maxGen)) {
+                            DEVICESTATE(done) = true;
+                        } else {
+                            RTS(sender);
+                        }
+                    }
+
+                    update(!DEVICESTATE(even));
+                    ]]>
+                </OnSend>
                 <OnInit>
                     <![CDATA[ 
                     DEVICESTATE(alive) = DEVICEPROPERTIES(alive);
