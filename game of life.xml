@@ -114,7 +114,7 @@
                 </State>
                 <OnInit>
                     <![CDATA[ 
-                    SUPSTATE(resultFile) = fopen("ring_test_output", "w");
+                    SUPSTATE(resultFile) = fopen("gol_output", "w");
                     ]]>
                 </OnInit>
                 <OnStop>
@@ -127,6 +127,7 @@
                         <![CDATA[ 
                         if (!SUPSTATE(failed))
                         {
+                            post("test test test dnb")
                             if (MSG(done)) {
                                 SUPSTATE(finishedCells) ++;
     
