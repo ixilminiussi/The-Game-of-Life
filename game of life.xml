@@ -16,11 +16,11 @@
             ]]>
         </Properties>
         <MessageTypes>
-            <MessageType id="small_talk">
+            <MessageType id="ping">
                 <Message>
                     <![CDATA[ 
                     bool alive;
-                    bool even;
+                    uint32_t gen;
                     bool done;
                     ]]>
                 </Message>
@@ -36,18 +36,29 @@
                 <State>
                     <![CDATA[ 
                     bool alive;
-                    bool even = true;
                     bool done = false;
-                    uint8_t gen = 0;
+                    uint32_t gen = 0;
 
                     uint8_t conversations[2] = {0, 0};
                     uint8_t livingNeighbours[2] = {0, 0};
                     ]]>
                 </State>
-                <OutputPin name="sender" messageTypeId="small_talk">
+                <OnInit>
+                    <![CDATA[ 
+                    DEVICESTATE(alive) = DEVICEPROPERTIES(alive);
+                    ]]>
+                </OnInit>
+                <ReadyToSend>
+                    <![CDATA[ 
+                    if (DEVICESTATE(gen) <= GRAPHPROPERTIES(maxGen)) {
+                        if (DEVICESTATE(conversations[DEVICESTATE(gen) % 2]) >= 2) RTS(sender);
+                    }
+                    ]]>
+                </ReadyToSend>
+                <OutputPin name="sender" messageTypeId="ping">
                     <OnSend>
                         <![CDATA[    
-                        uint8_t cycle = !DEVICESTATE(even);
+                        uint8_t cycle = DEVICESTATE(gen) % 2;
 
                         if (DEVICESTATE(alive)) {
                             if (DEVICESTATE(livingNeighbours[cycle]) < 1) DEVICESTATE(alive) = false;
@@ -63,12 +74,12 @@
                         if (DEVICESTATE(gen) >= GRAPHPROPERTIES(maxGen)) DEVICESTATE(done) = true;
                         
                         MSG(alive) = DEVICESTATE(alive);
-                        MSG(even) = DEVICESTATE(even);
+                        MSG(gen) = DEVICESTATE(gen);
                         MSG(done) = DEVICESTATE(done);
                         ]]>
                     </OnSend>
                 </OutputPin>
-                <InputPin name="receiver" messageTypeId="small_talk">
+                <InputPin name="receiver" messageTypeId="ping">
                     <OnReceive>
                         <![CDATA[                         
                         if (MSG(even)) {
@@ -82,19 +93,6 @@
                         ]]>
                     </OnReceive>
                 </InputPin>
-                <ReadyToSend>
-                    <![CDATA[ 
-                    if (DEVICESTATE(gen) <= GRAPHPROPERTIES(maxGen)) {
-                        if (DEVICESTATE(even) && DEVICESTATE(conversations[0]) >= 2) RTS(sender);
-                        if (!DEVICESTATE(even) && DEVICESTATE(conversations[1]) >= 2) RTS(sender);
-                    }
-                    ]]>
-                </ReadyToSend>
-                <OnInit>
-                    <![CDATA[ 
-                    DEVICESTATE(alive) = DEVICEPROPERTIES(alive);
-                    ]]>
-                </OnInit>
             </DeviceType>
             <SupervisorType id="id">
                 <Code>
@@ -124,7 +122,7 @@
                     fclose(SUPSTATE(resultFile));
                     ]]>
                 </OnStop>
-                <SupervisorInPin id="" messageTypeId="small_talk">
+                <SupervisorInPin id="" messageTypeId="ping">
                     <OnReceive>
                         <![CDATA[ 
                         Super::post("onReceive ====================");
