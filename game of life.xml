@@ -118,11 +118,6 @@
                     SUPSTATE(resultFile) = fopen("gol_output", "w");
                     ]]>
                 </OnInit>
-                <OnSupervisorIdle>
-                    <![CDATA[ 
-                    Super::post("onSupervisorIdle ====================");
-                    ]]>
-                </OnSupervisorIdle>
                 <OnStop>
                     <![CDATA[
                     Super::post("onStop ====================");
