@@ -114,20 +114,27 @@
                 </State>
                 <OnInit>
                     <![CDATA[ 
+                    Super::post("onInit ====================");
                     SUPSTATE(resultFile) = fopen("gol_output", "w");
                     ]]>
                 </OnInit>
+                <OnIdle>
+                    <![CDATA[ 
+                    Super::post("onIdle ====================");
+                    ]]>
+                </OnIdle>
                 <OnStop>
                     <![CDATA[
+                    Super::post("onStop ====================");
                     fclose(SUPSTATE(resultFile));
                     ]]>
                 </OnStop>
                 <SupervisorInPin id="" messageTypeId="small_talk">
                     <OnReceive>
                         <![CDATA[ 
+                        Super::post("onReceive ====================");
                         if (!SUPSTATE(failed))
                         {
-                            Super::post("test test test dnb");
                             if (MSG(done)) {
                                 SUPSTATE(finishedCells) ++;
     
