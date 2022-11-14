@@ -127,7 +127,7 @@
                         <![CDATA[ 
                         if (!SUPSTATE(failed))
                         {
-                            post("test test test dnb");
+                            Super::post("test test test dnb");
                             if (MSG(done)) {
                                 SUPSTATE(finishedCells) ++;
     
