@@ -53,7 +53,7 @@
                     <![CDATA[ 
                     if (DEVICESTATE(generation) <= GRAPHPROPERTIES(maxGeneration)) {
                         if (DEVICESTATE(conversations[DEVICESTATE(generation) % 2]) >= 2) {
-                            RTSSUP(sender):
+                            RTSSUP():
                             RTS(sender);
                         }
                     }
