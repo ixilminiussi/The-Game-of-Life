@@ -13,6 +13,7 @@
             <![CDATA[ 
             uint8_t cellCount = 5;
             uint8_t maxGeneration = 10;
+            uint32_t cycles = 10;
             ]]>
         </Properties>
         <MessageTypes>
@@ -21,7 +22,15 @@
                     <![CDATA[ 
                     bool alive;
                     uint32_t generation;
-                    bool done;
+                    ]]>
+                </Message>
+            </MessageType>
+            <MessageType id="pong">
+                <Message>
+                    <![CDATA[
+                    bool alive;
+                    uint32_t generation;
+                    uint8_t id;
                     ]]>
                 </Message>
             </MessageType>
@@ -31,12 +40,12 @@
                 <Properties>
                     <![CDATA[ 
                     bool alive;
+                    uint8_t id;
                     ]]>
                 </Properties>
                 <State>
                     <![CDATA[ 
                     bool alive;
-                    bool done = false;
                     uint32_t generation = 0;
 
                     uint8_t conversations[2] = {0, 0};
@@ -53,7 +62,7 @@
                     <![CDATA[ 
                     if (DEVICESTATE(generation) <= GRAPHPROPERTIES(maxGeneration)) {
                         if (DEVICESTATE(conversations[DEVICESTATE(generation) % 2]) >= 2) {
-                            RTSSUP():
+                            if (DEVICESTATE(generation) % GRAPHPROPERTIES(cycles) == 0) RTSSUP();
                             RTS(sender);
                         }
                     }
@@ -61,32 +70,38 @@
                 </ReadyToSend>
                 <OutputPin name="sender" messageTypeId="ping">
                     <OnSend>
-                        <![CDATA[    
-                        uint8_t cycle = DEVICESTATE(generation) % 2;
-
-                        if (DEVICESTATE(alive)) {
-                            if (DEVICESTATE(livingNeighbours[cycle]) < 1) DEVICESTATE(alive) = false;
-                        }
-                        else {
-                            if (DEVICESTATE(livingNeighbours[cycle]) > 1) DEVICESTATE(alive) = true;
-                        }
-
-                        DEVICESTATE(generation) ++;
+                        <![CDATA[
                         DEVICESTATE(conversations[cycle]) = 0;
                         DEVICESTATE(livingNeighbours[cycle]) = 0;
-                        if (DEVICESTATE(generation) >= GRAPHPROPERTIES(maxGeneration)) DEVICESTATE(done) = true;
                         
                         MSG(alive) = DEVICESTATE(alive);
                         MSG(generation) = DEVICESTATE(generation);
-                        MSG(done) = DEVICESTATE(done);
                         ]]>
                     </OnSend>
                 </OutputPin>
+                <SupervisorOutPin messageTypeId="pong">
+                    <OnSend>
+                        <![CDATA[ 
+                        MSG(alive) = DEVICESTATE(alive);
+                        MSG(generation) = DEVICESTATE(generation);
+                        MSG(id) = DEVICEPROPERTIES(id);
+                        ]]>
+                    </OnSend>
+                </SupervisorOutPin>
                 <InputPin name="receiver" messageTypeId="ping">
                     <OnReceive>
                         <![CDATA[
                         DEVICESTATE(conversations[MSG(generation) % 2]) ++;
                         DEVICESTATE(livingNeighbours[MSG(generation) % 2]) += MSG(alive);
+                        
+                        uint8_t cycle = DEVICESTATE(generation) % 2;
+
+                        if (conversations[cycle] >= 2) {
+                            DEVICESTATE(generation) ++;
+
+                            if (DEVICESTATE(alive) && (DEVICESTATE(livingNeighbours[cycle]) < 1)) DEVICESTATE(alive) = false;
+                            else if (!DEVICESTATE(alive) && (DEVICESTATE(livingNeighbours[cycle]) > 1)) DEVICESTATE(alive) = true;
+                        }
                         ]]>
                     </OnReceive>
                 </InputPin>
@@ -143,11 +158,11 @@
 
     <GraphInstance id="gol_instance" graphTypeId="gol_type" P="{5,10}">
         <DeviceInstances>
-            <DevI id="0" type="cell" P="{0}" />
-            <DevI id="1" type="cell" P="{1}" />
-            <DevI id="2" type="cell" P="{0}" />
-            <DevI id="3" type="cell" P="{1}" />
-            <DevI id="4" type="cell" P="{0}" />
+            <DevI id="0" type="cell" P="{0,0}" />
+            <DevI id="1" type="cell" P="{1,1}" />
+            <DevI id="2" type="cell" P="{0,2}" />
+            <DevI id="3" type="cell" P="{1,3}" />
+            <DevI id="4" type="cell" P="{0,4}" />
         </DeviceInstances>
         <EdgeInstances>
             <EdgeI path="1:receiver-0:sender" />
