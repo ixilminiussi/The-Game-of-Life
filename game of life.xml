@@ -12,7 +12,7 @@
         <Properties>
             <![CDATA[ 
             uint8_t cellCount = 5;
-            uint8_t maxGen = 10;
+            uint8_t maxGeneration = 10;
             ]]>
         </Properties>
         <MessageTypes>
@@ -20,15 +20,14 @@
                 <Message>
                     <![CDATA[ 
                     bool alive;
-                    uint32_t gen;
+                    uint32_t generation;
                     bool done;
-                    
                     ]]>
                 </Message>
             </MessageType>
         </MessageTypes>
         <DeviceTypes>
-            <DeviceType id="citizen">
+            <DeviceType id="cell">
                 <Properties>
                     <![CDATA[ 
                     bool alive;
@@ -38,7 +37,7 @@
                     <![CDATA[ 
                     bool alive;
                     bool done = false;
-                    uint32_t gen = 0;
+                    uint32_t generation = 0;
 
                     uint8_t conversations[2] = {0, 0};
                     uint8_t livingNeighbours[2] = {0, 0};
@@ -47,19 +46,20 @@
                 <OnInit>
                     <![CDATA[ 
                     DEVICESTATE(alive) = DEVICEPROPERTIES(alive);
+                    DEVICESTATE(generation) = GRAPHPROPERTIES(maxGeneration);
                     ]]>
                 </OnInit>
                 <ReadyToSend>
                     <![CDATA[ 
-                    if (DEVICESTATE(gen) <= GRAPHPROPERTIES(maxGen)) {
-                        if (DEVICESTATE(conversations[DEVICESTATE(gen) % 2]) >= 2) RTS(sender);
+                    if (DEVICESTATE(generation) <= GRAPHPROPERTIES(maxGeneration)) {
+                        if (DEVICESTATE(conversations[DEVICESTATE(generation) % 2]) >= 2) RTS(sender);
                     }
                     ]]>
                 </ReadyToSend>
                 <OutputPin name="sender" messageTypeId="ping">
                     <OnSend>
                         <![CDATA[    
-                        uint8_t cycle = DEVICESTATE(gen) % 2;
+                        uint8_t cycle = DEVICESTATE(generation) % 2;
 
                         if (DEVICESTATE(alive)) {
                             if (DEVICESTATE(livingNeighbours[cycle]) < 1) DEVICESTATE(alive) = false;
@@ -68,13 +68,13 @@
                             if (DEVICESTATE(livingNeighbours[cycle]) > 1) DEVICESTATE(alive) = true;
                         }
 
-                        DEVICESTATE(gen) ++;
+                        DEVICESTATE(generation) ++;
                         DEVICESTATE(conversations[cycle]) = 0;
                         DEVICESTATE(livingNeighbours[cycle]) = 0;
-                        if (DEVICESTATE(gen) >= GRAPHPROPERTIES(maxGen)) DEVICESTATE(done) = true;
+                        if (DEVICESTATE(generation) >= GRAPHPROPERTIES(maxGeneration)) DEVICESTATE(done) = true;
                         
                         MSG(alive) = DEVICESTATE(alive);
-                        MSG(gen) = DEVICESTATE(gen);
+                        MSG(generation) = DEVICESTATE(generation);
                         MSG(done) = DEVICESTATE(done);
                         ]]>
                     </OnSend>
@@ -82,8 +82,8 @@
                 <InputPin name="receiver" messageTypeId="ping">
                     <OnReceive>
                         <![CDATA[
-                        DEVICESTATE(conversations[MSG(gen) % 2]) ++;
-                        DEVICESTATE(livingNeighbours[MSG(gen) % 2]) += MSG(alive);
+                        DEVICESTATE(conversations[MSG(generation) % 2]) ++;
+                        DEVICESTATE(livingNeighbours[MSG(generation) % 2]) += MSG(alive);
                         ]]>
                     </OnReceive>
                 </InputPin>
@@ -140,11 +140,11 @@
 
     <GraphInstance id="gol_instance" graphTypeId="gol_type" P="{5,10}">
         <DeviceInstances>
-            <DevI id="0" type="citizen" P="{0}" />
-            <DevI id="1" type="citizen" P="{1}" />
-            <DevI id="2" type="citizen" P="{0}" />
-            <DevI id="3" type="citizen" P="{1}" />
-            <DevI id="4" type="citizen" P="{0}" />
+            <DevI id="0" type="cell" P="{0}" />
+            <DevI id="1" type="cell" P="{1}" />
+            <DevI id="2" type="cell" P="{0}" />
+            <DevI id="3" type="cell" P="{1}" />
+            <DevI id="4" type="cell" P="{0}" />
         </DeviceInstances>
         <EdgeInstances>
             <EdgeI path="1:receiver-0:sender" />
