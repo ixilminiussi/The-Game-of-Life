@@ -72,7 +72,7 @@
                     <OnSend>
                         <![CDATA[
                         uint8_t cycle = DEVICESTATE(generation) % 2;
-                        
+
                         DEVICESTATE(conversations[cycle]) = 0;
                         DEVICESTATE(livingNeighbours[cycle]) = 0;
                         
@@ -142,7 +142,7 @@
                         Super::post("onReceive ====================");
                         if (!SUPSTATE(failed))
                         {
-                            if (MSG(generation) == GRAPHPROPERTIES(maxGeneration) {
+                            if (MSG(generation) == GRAPHPROPERTIES(maxGeneration)) {
                                 SUPSTATE(finishedCells) ++;
     
                                 if (SUPSTATE(finishedCells) >= GRAPHPROPERTIES(cellCount)) {
