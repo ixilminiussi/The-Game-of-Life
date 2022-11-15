@@ -71,6 +71,8 @@
                 <OutputPin name="sender" messageTypeId="ping">
                     <OnSend>
                         <![CDATA[
+                        uint8_t cycle = DEVICESTATE(generation) % 2;
+                        
                         DEVICESTATE(conversations[cycle]) = 0;
                         DEVICESTATE(livingNeighbours[cycle]) = 0;
                         
@@ -134,13 +136,13 @@
                     fclose(SUPSTATE(resultFile));
                     ]]>
                 </OnStop>
-                <SupervisorInPin id="" messageTypeId="ping">
+                <SupervisorInPin id="" messageTypeId="pong">
                     <OnReceive>
                         <![CDATA[ 
                         Super::post("onReceive ====================");
                         if (!SUPSTATE(failed))
                         {
-                            if (MSG(done)) {
+                            if (MSG(generation) == GRAPHPROPERTIES(maxGeneration) {
                                 SUPSTATE(finishedCells) ++;
     
                                 if (SUPSTATE(finishedCells) >= GRAPHPROPERTIES(cellCount)) {
