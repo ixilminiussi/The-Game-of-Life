@@ -22,6 +22,7 @@
                     bool alive;
                     uint32_t gen;
                     bool done;
+                    
                     ]]>
                 </Message>
             </MessageType>
@@ -68,7 +69,6 @@
                         }
 
                         DEVICESTATE(gen) ++;
-                        DEVICESTATE(even) = cycle;
                         DEVICESTATE(conversations[cycle]) = 0;
                         DEVICESTATE(livingNeighbours[cycle]) = 0;
                         if (DEVICESTATE(gen) >= GRAPHPROPERTIES(maxGen)) DEVICESTATE(done) = true;
@@ -81,15 +81,9 @@
                 </OutputPin>
                 <InputPin name="receiver" messageTypeId="ping">
                     <OnReceive>
-                        <![CDATA[                         
-                        if (MSG(even)) {
-                            DEVICESTATE(conversations[0]) ++;
-                            DEVICESTATE(livingNeighbours[0]) += MSG(alive);
-                        }
-                        else {
-                            DEVICESTATE(conversations[1]) ++;
-                            DEVICESTATE(livingNeighbours[1]) += MSG(alive);
-                        }
+                        <![CDATA[
+                        DEVICESTATE(conversations[MSG(gen) % 2]) ++;
+                        DEVICESTATE(livingNeighbours[MSG(gen) % 2]) += MSG(alive);
                         ]]>
                     </OnReceive>
                 </InputPin>
