@@ -126,20 +126,17 @@
                 </State>
                 <OnInit>
                     <![CDATA[ 
-                    Super::post("onInit ====================");
                     SUPSTATE(resultFile) = fopen("gol_output", "w");
                     ]]>
                 </OnInit>
                 <OnStop>
                     <![CDATA[
-                    Super::post("onStop ====================");
                     fclose(SUPSTATE(resultFile));
                     ]]>
                 </OnStop>
                 <SupervisorInPin id="" messageTypeId="pong">
                     <OnReceive>
                         <![CDATA[ 
-                        Super::post("onReceive ====================");
                         if (!SUPSTATE(failed))
                         {
                             if (MSG(generation) == GRAPHPROPERTIES(maxGeneration)) {
