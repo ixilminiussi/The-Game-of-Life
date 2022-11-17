@@ -48,7 +48,7 @@
                     bool alive;
                     uint32_t generation = 0;
 
-                    uint8_t conversations[2] = {0, 0};
+                    uint8_t conversations[2] = {2, 0};
                     uint8_t livingNeighbours[2] = {0, 0};
                     ]]>
                 </State>
@@ -126,17 +126,20 @@
                 </State>
                 <OnInit>
                     <![CDATA[ 
+                    Super::post("onInit ====================");
                     SUPSTATE(resultFile) = fopen("gol_output", "w");
                     ]]>
                 </OnInit>
                 <OnStop>
                     <![CDATA[
+                    Super::post("onStop ====================");
                     fclose(SUPSTATE(resultFile));
                     ]]>
                 </OnStop>
                 <SupervisorInPin id="" messageTypeId="pong">
                     <OnReceive>
                         <![CDATA[ 
+                        Super::post("onReceive ====================");
                         if (!SUPSTATE(failed))
                         {
                             if (MSG(generation) == GRAPHPROPERTIES(maxGeneration)) {
