@@ -173,6 +173,12 @@
             <EdgeI path="3:receiver-2:sender" />
             <EdgeI path="4:receiver-3:sender" />
             <EdgeI path="0:receiver-4:sender" />
+
+            <EdgeI path="0:receiver-1:sender" />
+            <EdgeI path="1:receiver-2:sender" />
+            <EdgeI path="2:receiver-3:sender" />
+            <EdgeI path="3:receiver-4:sender" />
+            <EdgeI path="4:receiver-0:sender" />
         </EdgeInstances>
     </GraphInstance>
 </Graphs>
