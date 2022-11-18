@@ -48,20 +48,19 @@
                     bool alive;
                     uint32_t generation = 0;
 
-                    uint8_t conversations[2] = {2, 0};
-                    uint8_t livingNeighbours[2] = {0, 0};
+                    uint8_t pings[2] = {2, 0};
+                    uint8_t liveFriends[2] = {0, 0};
                     ]]>
                 </State>
                 <OnInit>
                     <![CDATA[ 
                     DEVICESTATE(alive) = DEVICEPROPERTIES(alive);
-                    DEVICESTATE(generation) = GRAPHPROPERTIES(maxGeneration);
                     ]]>
                 </OnInit>
                 <ReadyToSend>
                     <![CDATA[ 
                     if (DEVICESTATE(generation) <= GRAPHPROPERTIES(maxGeneration)) {
-                        if (DEVICESTATE(conversations[DEVICESTATE(generation) % 2]) >= 2) {
+                        if (DEVICESTATE(pings[DEVICESTATE(generation) % 2]) >= 2) {
                             if (DEVICESTATE(generation) % GRAPHPROPERTIES(cycles) == 0) RTSSUP();
                             RTS(sender);
                         }
@@ -73,8 +72,8 @@
                         <![CDATA[
                         uint8_t cycle = DEVICESTATE(generation) % 2;
 
-                        DEVICESTATE(conversations[cycle]) = 0;
-                        DEVICESTATE(livingNeighbours[cycle]) = 0;
+                        DEVICESTATE(pings[cycle]) = 0;
+                        DEVICESTATE(liveFriends[cycle]) = 0;
                         
                         MSG(alive) = DEVICESTATE(alive);
                         MSG(generation) = DEVICESTATE(generation);
@@ -94,16 +93,16 @@
                     <OnReceive>
                         <![CDATA[
                         handler_log(2, "received message");
-                        DEVICESTATE(conversations[MSG(generation) % 2]) ++;
-                        DEVICESTATE(livingNeighbours[MSG(generation) % 2]) += MSG(alive);
+                        DEVICESTATE(pings[MSG(generation) % 2]) ++;
+                        DEVICESTATE(liveFriends[MSG(generation) % 2]) += MSG(alive);
                         
                         uint8_t cycle = DEVICESTATE(generation) % 2;
 
-                        if (DEVICESTATE(conversations[cycle]) >= 2) {
+                        if (DEVICESTATE(pings[cycle]) >= 2) {
                             DEVICESTATE(generation) ++;
 
-                            if (DEVICESTATE(alive) && (DEVICESTATE(livingNeighbours[cycle]) < 1)) DEVICESTATE(alive) = false;
-                            else if (!DEVICESTATE(alive) && (DEVICESTATE(livingNeighbours[cycle]) > 1)) DEVICESTATE(alive) = true;
+                            if (DEVICESTATE(alive) && (DEVICESTATE(liveFriends[cycle]) < 1)) DEVICESTATE(alive) = false;
+                            else if (!DEVICESTATE(alive) && (DEVICESTATE(liveFriends[cycle]) > 1)) DEVICESTATE(alive) = true;
                         }
                         ]]>
                     </OnReceive>
