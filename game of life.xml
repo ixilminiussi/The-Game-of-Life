@@ -93,7 +93,7 @@
                 <InputPin name="receiver" messageTypeId="ping">
                     <OnReceive>
                         <![CDATA[
-                        handler_log(2, "received message")
+                        handler_log(2, "received message");
                         DEVICESTATE(conversations[MSG(generation) % 2]) ++;
                         DEVICESTATE(livingNeighbours[MSG(generation) % 2]) += MSG(alive);
                         
