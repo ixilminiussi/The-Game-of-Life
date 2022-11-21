@@ -60,6 +60,7 @@
                 <ReadyToSend>
                     <![CDATA[
                     if (DEVICESTATE(generation) == 0) {
+                        handler_log("testing order");
                         RTS(sender);
                     } 
                     else if (DEVICESTATE(generation) <= GRAPHPROPERTIES(maxGeneration)) {
@@ -90,7 +91,6 @@
                 <InputPin name="receiver" messageTypeId="ping">
                     <OnReceive>
                         <![CDATA[
-
                         DEVICESTATE(pings[MSG(generation) % 2]) ++;
                         DEVICESTATE(liveNeighbours[MSG(generation) % 2]) += MSG(alive);
 
