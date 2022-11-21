@@ -60,7 +60,7 @@
                 <ReadyToSend>
                     <![CDATA[
                     if (DEVICESTATE(generation) == 0) {
-                        handler_log("testing order");
+                        handler_log(2, "testing order");
                         RTS(sender);
                     } 
                     else if (DEVICESTATE(generation) <= GRAPHPROPERTIES(maxGeneration)) {
