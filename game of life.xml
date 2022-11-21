@@ -47,6 +47,7 @@
                     <![CDATA[ 
                     bool alive;
                     uint32_t generation = 0;
+                    uint8_t begin = 1;
 
                     uint8_t pings[2] = {0, 0};
                     uint8_t liveNeighbours[2] = {0, 0};
@@ -59,27 +60,27 @@
                 </OnInit>
                 <ReadyToSend>
                     <![CDATA[
-                    if (DEVICESTATE(generation) == 0) {
+                    if (DEVICESTATE(begin)) {
                         RTS(sender);
                     } 
-                    else if (DEVICESTATE(generation) <= GRAPHPROPERTIES(maxGeneration)) {
-                            if (DEVICESTATE(pings[DEVICESTATE(generation) % 2]) >= 2) {
-                                if (DEVICESTATE(generation) % GRAPHPROPERTIES(cycles) == 0) RTSSUP();
-                                RTS(sender);
-                            }
+                    else if (DEVICESTATE(generation) <= GRAPHPROPERTIES(maxGeneration) && (DEVICESTATE(pings[DEVICESTATE(generation) % 2]) >= 2)) {
+                            if (DEVICESTATE(generation) % GRAPHPROPERTIES(cycles) == 0) RTSSUP();
+                            RTS(sender);
                         }
                     ]]>
                 </ReadyToSend>
                 <OutputPin name="sender" messageTypeId="ping">
                     <OnSend>
-                        <![CDATA[                        
+                        <![CDATA[ 
                         MSG(alive) = DEVICESTATE(alive);
                         MSG(generation) = DEVICESTATE(generation);
 
-                        uint8_t prev = DEVICESTATE(generation) % 2;
+                        if (!DEVICESTATE(begin)) {
 
-                        if (DEVICESTATE(pings[DEVICESTATE(generation) % 2]) >= 2) {
+                            uint8_t prev = DEVICESTATE(generation) % 2;
+
                             DEVICESTATE(generation) ++;
+                            
                             if (DEVICESTATE(generation) <= GRAPHPROPERTIES(maxGeneration)) {
                                 handler_log(2, "updating and chilling");
                                 if (DEVICESTATE(alive) && DEVICESTATE(liveNeighbours[prev]) < 1) DEVICESTATE(alive) = false;
@@ -88,7 +89,7 @@
                                 DEVICESTATE(liveNeighbours[prev]) = 0;
                                 DEVICESTATE(pings[prev]) = 0;
                             } else handler_log(2, "done");
-                        }
+                        } else DEVICESTATE(begin) = 0;
                         ]]>
                     </OnSend>
                 </OutputPin>
