@@ -63,6 +63,7 @@
                         RTS(sender);
                         break;
                     } 
+                    
                     if (DEVICESTATE(generation) <= GRAPHPROPERTIES(maxGeneration)) {
                         if (DEVICESTATE(pings[DEVICESTATE(generation) % 2]) >= 2) {
                             if (DEVICESTATE(generation) % GRAPHPROPERTIES(cycles) == 0) RTSSUP();
