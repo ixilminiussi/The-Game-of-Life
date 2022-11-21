@@ -71,6 +71,7 @@
                     <OnSend>
                         <![CDATA[
                         uint8_t cycle = DEVICESTATE(generation) % 2;
+                        DEVICESTATE(generation) ++;
 
                         DEVICESTATE(pings[cycle]) = 0;
                         DEVICESTATE(liveFriends[cycle]) = 0;
@@ -104,8 +105,6 @@
                         uint8_t cycle = DEVICESTATE(generation) % 2;
 
                         if (DEVICESTATE(pings[cycle]) >= 2) {
-                            DEVICESTATE(generation) ++;
-
                             if (DEVICESTATE(alive) && (DEVICESTATE(liveFriends[cycle]) < 1)) DEVICESTATE(alive) = false;
                             else if (!DEVICESTATE(alive) && (DEVICESTATE(liveFriends[cycle]) > 1)) DEVICESTATE(alive) = true;
                         }
