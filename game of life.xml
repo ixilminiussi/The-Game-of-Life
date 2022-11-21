@@ -63,7 +63,7 @@
                     if (DEVICESTATE(begin)) {
                         RTS(sender);
                     } 
-                    else if (DEVICESTATE(generation) <= GRAPHPROPERTIES(maxGeneration) && (DEVICESTATE(pings[DEVICESTATE(generation) % 2]) >= 2)) {
+                    else if (DEVICESTATE(generation) < GRAPHPROPERTIES(maxGeneration) && (DEVICESTATE(pings[DEVICESTATE(generation) % 2]) >= 2)) {
                             if (DEVICESTATE(generation) % GRAPHPROPERTIES(cycles) == 0) RTSSUP();
                             RTS(sender);
                         }
@@ -77,15 +77,14 @@
                             uint8_t prev = DEVICESTATE(generation) % 2;
 
                             DEVICESTATE(generation) ++;
+
+                            handler_log(2, "updating and chilling");
+                            if (DEVICESTATE(alive) && DEVICESTATE(liveNeighbours[prev]) < 1) DEVICESTATE(alive) = false;
+                            else if (!DEVICESTATE(alive) && DEVICESTATE(liveNeighbours[prev]) > 1) DEVICESTATE(alive) = true;
+    
+                            DEVICESTATE(liveNeighbours[prev]) = 0;
+                            DEVICESTATE(pings[prev]) = 0;
                             
-                            if (DEVICESTATE(generation) <= GRAPHPROPERTIES(maxGeneration)) {
-                                handler_log(2, "updating and chilling");
-                                if (DEVICESTATE(alive) && DEVICESTATE(liveNeighbours[prev]) < 1) DEVICESTATE(alive) = false;
-                                else if (!DEVICESTATE(alive) && DEVICESTATE(liveNeighbours[prev]) > 1) DEVICESTATE(alive) = true;
-        
-                                DEVICESTATE(liveNeighbours[prev]) = 0;
-                                DEVICESTATE(pings[prev]) = 0;
-                            } else handler_log(2, "done");
                         } else DEVICESTATE(begin) = 0;
 
                         MSG(alive) = DEVICESTATE(alive);
@@ -128,21 +127,18 @@
                     ]]>
                 </State>
                 <OnInit>
-                    <![CDATA[ 
-                    Super::post("onInit ====================");
+                    <![CDATA[
                     SUPSTATE(resultFile) = fopen("gol_output", "w");
                     ]]>
                 </OnInit>
                 <OnStop>
                     <![CDATA[
-                    Super::post("onStop ====================");
                     fclose(SUPSTATE(resultFile));
                     ]]>
                 </OnStop>
                 <SupervisorInPin id="" messageTypeId="pong">
                     <OnReceive>
-                        <![CDATA[ 
-                        Super::post("onReceive ====================");
+                        <![CDATA[
                         if (!SUPSTATE(failed))
                         {
                             if (MSG(generation) == GRAPHPROPERTIES(maxGeneration)) {
@@ -150,7 +146,7 @@
     
                                 if (SUPSTATE(finishedCells) >= GRAPHPROPERTIES(cellCount)) {
                                     SUPSTATE(finished) = true;
-                                    fprintf(SUPSTATE(resultFile), "1"); 
+                                    fprintf(SUPSTATE(resultFile), "testestestestestestestest"); 
                                 }
                             }
                         }
