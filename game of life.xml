@@ -78,15 +78,17 @@
 
                         uint8_t prev = DEVICESTATE(generation) % 2;
 
-                        DEVICESTATE(generation) ++;
-                        if (DEVICESTATE(generation) <= GRAPHPROPERTIES(maxGeneration)) {
-                            handler_log(2, "updating and chilling");
-                            if (DEVICESTATE(alive) && DEVICESTATE(liveNeighbours[prev]) < 1) DEVICESTATE(alive) = false;
-                            else if (!DEVICESTATE(alive) && DEVICESTATE(liveNeighbours[prev]) > 1) DEVICESTATE(alive) = true;
-    
-                            DEVICESTATE(liveNeighbours[prev]) = 0;
-                            DEVICESTATE(pings[prev]) = 0;
-                        } else handler_log(2, "done");
+                        if (DEVICESTATE(pings[DEVICESTATE(generation) % 2]) >= 2) {
+                            DEVICESTATE(generation) ++;
+                            if (DEVICESTATE(generation) <= GRAPHPROPERTIES(maxGeneration)) {
+                                handler_log(2, "updating and chilling");
+                                if (DEVICESTATE(alive) && DEVICESTATE(liveNeighbours[prev]) < 1) DEVICESTATE(alive) = false;
+                                else if (!DEVICESTATE(alive) && DEVICESTATE(liveNeighbours[prev]) > 1) DEVICESTATE(alive) = true;
+        
+                                DEVICESTATE(liveNeighbours[prev]) = 0;
+                                DEVICESTATE(pings[prev]) = 0;
+                            } else handler_log(2, "done");
+                        }
                         ]]>
                     </OnSend>
                 </OutputPin>
