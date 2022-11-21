@@ -71,10 +71,7 @@
                 </ReadyToSend>
                 <OutputPin name="sender" messageTypeId="ping">
                     <OnSend>
-                        <![CDATA[ 
-                        MSG(alive) = DEVICESTATE(alive);
-                        MSG(generation) = DEVICESTATE(generation);
-
+                        <![CDATA[
                         if (!DEVICESTATE(begin)) {
 
                             uint8_t prev = DEVICESTATE(generation) % 2;
@@ -90,6 +87,9 @@
                                 DEVICESTATE(pings[prev]) = 0;
                             } else handler_log(2, "done");
                         } else DEVICESTATE(begin) = 0;
+
+                        MSG(alive) = DEVICESTATE(alive);
+                        MSG(generation) = DEVICESTATE(generation);
                         ]]>
                     </OnSend>
                 </OutputPin>
