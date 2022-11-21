@@ -12,8 +12,8 @@
         <Properties>
             <![CDATA[ 
             uint8_t cellCount = 5;
-            uint8_t maxGeneration = 10;
-            uint32_t cycles = 10;
+            uint8_t maxGeneration = 2;
+            uint32_t cycles = 2;
             ]]>
         </Properties>
         <MessageTypes>
@@ -160,7 +160,7 @@
         </DeviceTypes>
     </GraphType>
 
-    <GraphInstance id="gol_instance" graphTypeId="gol_type" P="{5,10}">
+    <GraphInstance id="gol_instance" graphTypeId="gol_type" P="{5,2,2}">
         <DeviceInstances>
             <DevI id="0" type="cell" P="{0,0}" />
             <DevI id="1" type="cell" P="{1,1}" />
