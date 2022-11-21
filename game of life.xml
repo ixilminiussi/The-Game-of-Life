@@ -60,7 +60,6 @@
                 <ReadyToSend>
                     <![CDATA[
                     if (DEVICESTATE(generation) == 0) {
-                        handler_log(2, "testing order");
                         RTS(sender);
                     } 
                     else if (DEVICESTATE(generation) <= GRAPHPROPERTIES(maxGeneration)) {
@@ -76,6 +75,18 @@
                         <![CDATA[                        
                         MSG(alive) = DEVICESTATE(alive);
                         MSG(generation) = DEVICESTATE(generation);
+
+                        uint8_t prev = DEVICESTATE(generation) % 2;
+
+                        DEVICESTATE(generation) ++;
+                        if (DEVICESTATE(generation) <= GRAPHPROPERTIES(maxGeneration) {
+                            handler_log(2, "updating and chilling");
+                            if (DEVICESTATE(alive) && DEVICESTATE(liveNeighbours[prev]) < 1) DEVICESTATE(alive) = false;
+                            else if (!DEVICESTATE(alive) && DEVICESTATE(liveNeighbours[prev]) > 1) DEVICESTATE(alive) = true;
+    
+                            DEVICESTATE(liveNeighbours[prev]) = 0;
+                            DEVICESTATE(pings[prev]) = 0;
+                        } else handler_log(2, "done");
                         ]]>
                     </OnSend>
                 </OutputPin>
@@ -93,19 +104,6 @@
                         <![CDATA[
                         DEVICESTATE(pings[MSG(generation) % 2]) ++;
                         DEVICESTATE(liveNeighbours[MSG(generation) % 2]) += MSG(alive);
-
-                        uint8_t prev = DEVICESTATE(generation) % 2;
-
-                        if (DEVICESTATE(pings[prev]) >= 2) {
-                            handler_log(2, "update");
-                            DEVICESTATE(generation) ++;
-
-                            if (DEVICESTATE(alive) && DEVICESTATE(liveNeighbours[prev]) < 1) DEVICESTATE(alive) = false;
-                            else if (!DEVICESTATE(alive) && DEVICESTATE(liveNeighbours[prev]) > 1) DEVICESTATE(alive) = true;
-
-                            DEVICESTATE(liveNeighbours[prev]) = 0;
-                            DEVICESTATE(pings[prev]) = 0;
-                        }
                         ]]>
                     </OnReceive>
                 </InputPin>
