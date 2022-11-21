@@ -61,15 +61,13 @@
                     <![CDATA[
                     if (DEVICESTATE(generation) == 0) {
                         RTS(sender);
-                        break;
                     } 
-                    
-                    if (DEVICESTATE(generation) <= GRAPHPROPERTIES(maxGeneration)) {
-                        if (DEVICESTATE(pings[DEVICESTATE(generation) % 2]) >= 2) {
-                            if (DEVICESTATE(generation) % GRAPHPROPERTIES(cycles) == 0) RTSSUP();
-                            RTS(sender);
+                    else if (DEVICESTATE(generation) <= GRAPHPROPERTIES(maxGeneration)) {
+                            if (DEVICESTATE(pings[DEVICESTATE(generation) % 2]) >= 2) {
+                                if (DEVICESTATE(generation) % GRAPHPROPERTIES(cycles) == 0) RTSSUP();
+                                RTS(sender);
+                            }
                         }
-                    }
                     ]]>
                 </ReadyToSend>
                 <OutputPin name="sender" messageTypeId="ping">
