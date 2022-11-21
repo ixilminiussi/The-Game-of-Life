@@ -96,11 +96,11 @@
 
                         uint8_t prev = DEVICE(generation) % 2;
 
-                        if (DEVICESTATE(pings[prev] >= 2) {
+                        if (DEVICESTATE(pings[prev]) >= 2) {
                             DEVICESTATE(generation) ++;
 
-                            if (DEVICESTATE(alive) && (DEVICESTATE(liveFriends[prev]) < 1)) DEVICESTATE(alive) = false;
-                            else if (!DEVICESTATE(alive) && (DEVICESTATE(liveFriends[prev]) > 1)) DEVICESTATE(alive) = true;
+                            if (DEVICESTATE(alive) && DEVICESTATE(liveFriends[prev]) < 1) DEVICESTATE(alive) = false;
+                            else if (!DEVICESTATE(alive) && DEVICESTATE(liveFriends[prev]) > 1) DEVICESTATE(alive) = true;
 
                             DEVICESTATE(liveFriends[prev]) = 0;
                             DEVICESTATE(pings[prev]) = 0;
