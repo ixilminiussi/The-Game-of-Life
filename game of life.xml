@@ -92,7 +92,12 @@
                 <InputPin name="receiver" messageTypeId="ping">
                     <OnReceive>
                         <![CDATA[
-                        handler_log(2, "received message");
+                        if (MSG(generation) % 2 == 0) handler_log(2, "received message from 0");
+                        else handler_log(2, "received message from 1);
+
+                        if (DEVICESTATE(generation) % 2 == 0) handler_log(2, "currently on 0");
+                        else handler_log(2, "currently on 1");
+
                         DEVICESTATE(pings[MSG(generation) % 2]) ++;
                         DEVICESTATE(liveFriends[MSG(generation) % 2]) += MSG(alive);
                         
