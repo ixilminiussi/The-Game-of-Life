@@ -94,7 +94,7 @@
                         DEVICESTATE(pings[MSG(generation) % 2]) ++;
                         DEVICESTATE(liveFriends[MSG(generation) % 2]) += MSG(alive);
 
-                        uint8_t prev = DEVICE(generation) % 2
+                        uint8_t prev = DEVICE(generation) % 2;
 
                         if (DEVICESTATE(pings[prev] >= 2) {
                             DEVICESTATE(generation) ++;
