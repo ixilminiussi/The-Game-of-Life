@@ -48,7 +48,7 @@
                     bool alive;
                     uint32_t generation = 0;
 
-                    uint8_t pings[2] = {2, 0};
+                    uint8_t pings[2] = {0, 0};
                     uint8_t liveFriends[2] = {0, 0};
                     ]]>
                 </State>
@@ -58,7 +58,11 @@
                     ]]>
                 </OnInit>
                 <ReadyToSend>
-                    <![CDATA[ 
+                    <![CDATA[
+                    if (DEVICESTATE(generation) == 0) {
+                        RTS(sender);
+                        break;
+                    } 
                     if (DEVICESTATE(generation) <= GRAPHPROPERTIES(maxGeneration)) {
                         if (DEVICESTATE(pings[DEVICESTATE(generation) % 2]) >= 2) {
                             if (DEVICESTATE(generation) % GRAPHPROPERTIES(cycles) == 0) RTSSUP();
@@ -69,13 +73,7 @@
                 </ReadyToSend>
                 <OutputPin name="sender" messageTypeId="ping">
                     <OnSend>
-                        <![CDATA[
-                        uint8_t cycle = DEVICESTATE(generation) % 2;
-                        DEVICESTATE(generation) ++;
-
-                        DEVICESTATE(pings[cycle]) = 0;
-                        DEVICESTATE(liveFriends[cycle]) = 0;
-                        
+                        <![CDATA[                        
                         MSG(alive) = DEVICESTATE(alive);
                         MSG(generation) = DEVICESTATE(generation);
                         ]]>
@@ -93,20 +91,19 @@
                 <InputPin name="receiver" messageTypeId="ping">
                     <OnReceive>
                         <![CDATA[
-                        if (MSG(generation) % 2 == 0) handler_log(2, "received message from 0");
-                        else handler_log(2, "received message from 1");
-
-                        if (DEVICESTATE(generation) % 2 == 0) handler_log(2, "currently on 0");
-                        else handler_log(2, "currently on 1");
-
                         DEVICESTATE(pings[MSG(generation) % 2]) ++;
                         DEVICESTATE(liveFriends[MSG(generation) % 2]) += MSG(alive);
-                        
-                        uint8_t cycle = DEVICESTATE(generation) % 2;
 
-                        if (DEVICESTATE(pings[cycle]) >= 2) {
-                            if (DEVICESTATE(alive) && (DEVICESTATE(liveFriends[cycle]) < 1)) DEVICESTATE(alive) = false;
-                            else if (!DEVICESTATE(alive) && (DEVICESTATE(liveFriends[cycle]) > 1)) DEVICESTATE(alive) = true;
+                        uint8_t prev = DEVICE(generation) % 2
+
+                        if (DEVICESTATE(pings[prev] >= 2) {
+                            DEVICESTATE(generation) ++;
+
+                            if (DEVICESTATE(alive) && (DEVICESTATE(liveFriends[prev]) < 1)) DEVICESTATE(alive) = false;
+                            else if (!DEVICESTATE(alive) && (DEVICESTATE(liveFriends[prev]) > 1)) DEVICESTATE(alive) = true;
+
+                            DEVICESTATE(liveFriends[prev]) = 0;
+                            DEVICESTATE(pings[prev]) = 0;
                         }
                         ]]>
                     </OnReceive>
