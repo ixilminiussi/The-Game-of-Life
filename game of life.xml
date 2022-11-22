@@ -120,6 +120,8 @@
                     <![CDATA[
                     bool failed = false;
                     bool finished = false;
+
+                    uint8_t results[GRAPHPROPERTIES(cellCount)]; 
     
                     int finishedCells = 0;
     
