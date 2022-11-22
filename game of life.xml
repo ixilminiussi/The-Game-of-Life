@@ -121,6 +121,7 @@
                     bool failed = false;
                     bool finished = false;
 
+                    
                     uint8_t results[5]; 
     
                     int finishedCells = 0;
