@@ -131,7 +131,7 @@
                 <OnInit>
                     <![CDATA[
                     SUPSTATE(resultFile) = fopen("gol_output", "w");
-                    uint8_t results = uint8_t[GRAPHPROPERTIES(cellCount)];
+                    results = uint8_t[GRAPHPROPERTIES(cellCount)];
                     ]]>
                 </OnInit>
                 <OnStop>
