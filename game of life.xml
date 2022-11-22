@@ -121,7 +121,7 @@
                     bool failed = false;
                     bool finished = false;
 
-                    uint8_t results[GRAPHPROPERTIES(cellCount)]; 
+                    uint8_t results[]; 
     
                     int finishedCells = 0;
     
@@ -131,6 +131,7 @@
                 <OnInit>
                     <![CDATA[
                     SUPSTATE(resultFile) = fopen("gol_output", "w");
+                    uint8_t results = uint8_t[GRAPHPROPERTIES(cellCount)];
                     ]]>
                 </OnInit>
                 <OnStop>
