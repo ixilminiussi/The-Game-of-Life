@@ -121,7 +121,6 @@
                     bool failed = false;
                     bool finished = false;
 
-                    
                     uint8_t results[5]; 
     
                     int finishedCells = 0;
@@ -139,7 +138,7 @@
                     if (SUPSTATE(finished)) Super::stop_application();
                     ]]>
                 </OnSupervisorIdle>
-                <OnStop>s
+                <OnStop>
                     <![CDATA[
                     for (int i = 0; i < 5; i ++) {
                         fprintf(SUPSTATE(resultFile), "%d. %d\n", i, SUPSTATE(results[i])); 
