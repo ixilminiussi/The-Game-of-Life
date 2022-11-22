@@ -135,7 +135,7 @@
                 </OnInit>
                 <OnSupervisorIdle>
                     <![CDATA[ 
-                    if (SUPSTATE(finished)) Super:stop_application();
+                    if (SUPSTATE(finished)) Super::stop_application();
                     ]]>
                 </OnSupervisorIdle>
                 <OnStop>
