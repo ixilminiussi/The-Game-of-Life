@@ -79,8 +79,8 @@
                             DEVICESTATE(generation) ++;
 
                             handler_log(2, "updating and chilling");
-                            if (DEVICESTATE(alive) && DEVICESTATE(liveNeighbours[prev]) < 1) DEVICESTATE(alive) = false;
-                            else if (!DEVICESTATE(alive) && DEVICESTATE(liveNeighbours[prev]) > 1) DEVICESTATE(alive) = true;
+                            if (DEVICESTATE(alive)) DEVICESTATE(alive) = false;
+                            else if (!DEVICESTATE(alive)) DEVICESTATE(alive) = true;
     
                             DEVICESTATE(liveNeighbours[prev]) = 0;
                             DEVICESTATE(pings[prev]) = 0;
@@ -138,10 +138,10 @@
                     if (SUPSTATE(finished)) Super::stop_application();
                     ]]>
                 </OnSupervisorIdle>
-                <OnStop>
+                <OnStop>s
                     <![CDATA[
                     for (int i = 0; i < 5; i ++) {
-                        fprintf(SUPSTATE(resultFile), "%d. %s\n", i, SUPSTATE(results[i])); 
+                        fprintf(SUPSTATE(resultFile), "%d. %d\n", i, SUPSTATE(results[i])); 
                     }
                     fclose(SUPSTATE(resultFile));
                     ]]>
