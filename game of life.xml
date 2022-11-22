@@ -154,8 +154,8 @@
                             if (MSG(generation) == GRAPHPROPERTIES(maxGeneration)) {
                                 SUPSTATE(finishedCells) ++;
                                 SUPSTATE(results[MSG(id)]) = MSG(alive);
-                                if (MSG(alive) == 0) Super::post("received 0")
-                                if (MSG(alive) == 1) Super::post("received 1")
+                                if (MSG(alive) == 0) Super::post("received 0");
+                                if (MSG(alive) == 1) Super::post("received 1");
     
                                 if (SUPSTATE(finishedCells) >= GRAPHPROPERTIES(cellCount)) {
                                     SUPSTATE(finished) = true;
