@@ -121,7 +121,7 @@
                     bool failed = false;
                     bool finished = false;
 
-                    uint8_t results[]; 
+                    uint8_t results[5]; 
     
                     int finishedCells = 0;
     
@@ -131,11 +131,18 @@
                 <OnInit>
                     <![CDATA[
                     SUPSTATE(resultFile) = fopen("gol_output", "w");
-                    results = uint8_t[GRAPHPROPERTIES(cellCount)];
                     ]]>
                 </OnInit>
+                <OnSupervisorIdle>
+                    <![CDATA[ 
+                    if (SUPSTATE(finished)) Super:stop_application();
+                    ]]>
+                </OnSupervisorIdle>
                 <OnStop>
                     <![CDATA[
+                    for (int i = 0; i < 5; i ++) {
+                        fprintf(SUPSTATE(resultFile), "%d. %s\n", i, SUPSTATE(results[i])); 
+                    }
                     fclose(SUPSTATE(resultFile));
                     ]]>
                 </OnStop>
@@ -146,10 +153,10 @@
                         {
                             if (MSG(generation) == GRAPHPROPERTIES(maxGeneration)) {
                                 SUPSTATE(finishedCells) ++;
+                                SUPSTATE(results[MSG(id)]) = MSG(alive);
     
                                 if (SUPSTATE(finishedCells) >= GRAPHPROPERTIES(cellCount)) {
                                     SUPSTATE(finished) = true;
-                                    fprintf(SUPSTATE(resultFile), "testestestestestestestest"); 
                                 }
                             }
                         }
