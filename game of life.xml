@@ -12,7 +12,7 @@
         <Properties>
             <![CDATA[ 
             uint8_t cellCount = 5;
-            uint8_t maxGeneration = 2;
+            uint8_t end = 2;
             uint32_t cycles = 2;
             ]]>
         </Properties>
@@ -21,7 +21,7 @@
                 <Message>
                     <![CDATA[ 
                     bool alive;
-                    uint32_t generation;
+                    uint32_t gen;
                     ]]>
                 </Message>
             </MessageType>
@@ -29,8 +29,9 @@
                 <Message>
                     <![CDATA[
                     bool alive;
-                    uint32_t generation;
-                    uint8_t id;
+                    uint32_t gen;
+                    uint8_t x;
+                    uint8_t y;
                     ]]>
                 </Message>
             </MessageType>
@@ -40,13 +41,14 @@
                 <Properties>
                     <![CDATA[ 
                     bool alive;
-                    uint8_t id;
+                    uint8_t x;
+                    uint8_t y;
                     ]]>
                 </Properties>
                 <State>
                     <![CDATA[ 
                     bool alive;
-                    uint32_t generation = 0;
+                    uint32_t gen = 0;
                     uint8_t begin = 1;
 
                     uint8_t pings[2] = {0, 0};
@@ -63,8 +65,8 @@
                     if (DEVICESTATE(begin)) {
                         RTS(sender);
                     } 
-                    else if (DEVICESTATE(generation) < GRAPHPROPERTIES(maxGeneration) && (DEVICESTATE(pings[DEVICESTATE(generation) % 2]) >= 2)) {
-                            if (DEVICESTATE(generation) % GRAPHPROPERTIES(cycles) == 0) RTSSUP();
+                    else if (DEVICESTATE(gen) < GRAPHPROPERTIES(end) && (DEVICESTATE(pings[DEVICESTATE(gen) % 2]) >= 2)) {
+                            if (DEVICESTATE(gen) % GRAPHPROPERTIES(cycles) == 0) RTSSUP();
                             RTS(sender);
                         }
                     ]]>
@@ -74,9 +76,9 @@
                         <![CDATA[
                         if (!DEVICESTATE(begin)) {
 
-                            uint8_t prev = DEVICESTATE(generation) % 2;
+                            uint8_t prev = DEVICESTATE(gen) % 2;
 
-                            DEVICESTATE(generation) ++;
+                            DEVICESTATE(gen) ++;
 
                             handler_log(2, "updating and chilling");
                             if (DEVICESTATE(alive)) DEVICESTATE(alive) = false;
@@ -88,7 +90,7 @@
                         } else DEVICESTATE(begin) = 0;
 
                         MSG(alive) = DEVICESTATE(alive);
-                        MSG(generation) = DEVICESTATE(generation);
+                        MSG(gen) = DEVICESTATE(gen);
                         ]]>
                     </OnSend>
                 </OutputPin>
@@ -96,16 +98,17 @@
                     <OnSend>
                         <![CDATA[ 
                         MSG(alive) = DEVICESTATE(alive);
-                        MSG(generation) = DEVICESTATE(generation);
-                        MSG(id) = DEVICEPROPERTIES(id);
+                        MSG(gen) = DEVICESTATE(gen);
+                        MSG(x) = DEVICEPROPERTIES(x);
+                        MSG(y) = DEVICEPROPERTIES(y);
                         ]]>
                     </OnSend>
                 </SupervisorOutPin>
                 <InputPin name="receiver" messageTypeId="ping">
                     <OnReceive>
                         <![CDATA[
-                        DEVICESTATE(pings[MSG(generation) % 2]) ++;
-                        DEVICESTATE(liveNeighbours[MSG(generation) % 2]) += MSG(alive);
+                        DEVICESTATE(pings[MSG(gen) % 2]) ++;
+                        DEVICESTATE(liveNeighbours[MSG(gen) % 2]) += MSG(alive);
                         ]]>
                     </OnReceive>
                 </InputPin>
@@ -119,9 +122,6 @@
                 <State>
                     <![CDATA[
                     bool failed = false;
-                    bool finished = false;
-
-                    uint8_t results[5]; 
     
                     int finishedCells = 0;
     
@@ -133,16 +133,8 @@
                     SUPSTATE(resultFile) = fopen("gol_output", "w");
                     ]]>
                 </OnInit>
-                <OnSupervisorIdle>
-                    <![CDATA[ 
-                    if (SUPSTATE(finished)) Super::stop_application();
-                    ]]>
-                </OnSupervisorIdle>
                 <OnStop>
                     <![CDATA[
-                    for (int i = 0; i < 5; i ++) {
-                        fprintf(SUPSTATE(resultFile), "%d. %d\n", i, SUPSTATE(results[i])); 
-                    }
                     fclose(SUPSTATE(resultFile));
                     ]]>
                 </OnStop>
@@ -151,14 +143,14 @@
                         <![CDATA[
                         if (!SUPSTATE(failed))
                         {
-                            if (MSG(generation) == GRAPHPROPERTIES(maxGeneration)) {
+                            if (MSG(gen) == GRAPHPROPERTIES(end)) {
                                 SUPSTATE(finishedCells) ++;
                                 SUPSTATE(results[MSG(id)]) = MSG(alive);
-                                if (MSG(alive) == 0) Super::post("received 0");
-                                if (MSG(alive) == 1) Super::post("received 1");
+
+                                fprintf(SUPSTATE(resultFile), "%d, %d, %d, %d\n", MSG(x), MSG(y), MSG(gen), MSG(alive)); 
     
                                 if (SUPSTATE(finishedCells) >= GRAPHPROPERTIES(cellCount)) {
-                                    SUPSTATE(finished) = true;
+                                    Super::stop_application();
                                 }
                             }
                         }
@@ -171,11 +163,11 @@
 
     <GraphInstance id="gol_instance" graphTypeId="gol_type" P="{5,5,5}">
         <DeviceInstances>
-            <DevI id="0" type="cell" P="{0,0}" />
-            <DevI id="1" type="cell" P="{1,1}" />
-            <DevI id="2" type="cell" P="{0,2}" />
-            <DevI id="3" type="cell" P="{1,3}" />
-            <DevI id="4" type="cell" P="{0,4}" />
+            <DevI id="0" type="cell" P="{0,0,0}" />
+            <DevI id="1" type="cell" P="{1,1,0}" />
+            <DevI id="2" type="cell" P="{0,2,0}" />
+            <DevI id="3" type="cell" P="{1,3,0}" />
+            <DevI id="4" type="cell" P="{0,4,0}" />
         </DeviceInstances>
         <EdgeInstances>
             <EdgeI path="1:receiver-0:sender" />
