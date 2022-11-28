@@ -20,7 +20,7 @@
             <MessageType id="ping">
                 <Message>
                     <![CDATA[ 
-                    bool alive;
+                    uint8_t alive;
                     uint32_t gen;
                     ]]>
                 </Message>
@@ -28,10 +28,11 @@
             <MessageType id="pong">
                 <Message>
                     <![CDATA[
-                    bool alive;
+                    uint8_t alive;
                     uint32_t gen;
                     uint8_t x;
                     uint8_t y;
+                    uint8_t id;
                     ]]>
                 </Message>
             </MessageType>
@@ -40,14 +41,14 @@
             <DeviceType id="cell">
                 <Properties>
                     <![CDATA[ 
-                    bool alive;
+                    uint8_t alive;
                     uint8_t x;
                     uint8_t y;
                     ]]>
                 </Properties>
                 <State>
                     <![CDATA[ 
-                    bool alive;
+                    uint8_t alive;
                     uint32_t gen = 0;
                     uint8_t begin = 1;
 
@@ -101,6 +102,7 @@
                         MSG(gen) = DEVICESTATE(gen);
                         MSG(x) = DEVICEPROPERTIES(x);
                         MSG(y) = DEVICEPROPERTIES(y);
+                        MSG(id) = DEVICEPROPERTIES(id);
                         ]]>
                     </OnSend>
                 </SupervisorOutPin>
@@ -121,7 +123,7 @@
                 </Code>
                 <State>
                     <![CDATA[
-                    bool failed = false;
+                    uint8_t failed = false;
     
                     int finishedCells = 0;
     
