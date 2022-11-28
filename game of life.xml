@@ -32,7 +32,6 @@
                     uint32_t gen;
                     uint8_t x;
                     uint8_t y;
-                    uint8_t id;
                     ]]>
                 </Message>
             </MessageType>
@@ -102,7 +101,6 @@
                         MSG(gen) = DEVICESTATE(gen);
                         MSG(x) = DEVICEPROPERTIES(x);
                         MSG(y) = DEVICEPROPERTIES(y);
-                        MSG(id) = DEVICEPROPERTIES(id);
                         ]]>
                     </OnSend>
                 </SupervisorOutPin>
@@ -147,7 +145,6 @@
                         {
                             if (MSG(gen) == GRAPHPROPERTIES(end)) {
                                 SUPSTATE(finishedCells) ++;
-                                SUPSTATE(results[MSG(id)]) = MSG(alive);
 
                                 fprintf(SUPSTATE(resultFile), "%d, %d, %d, %d\n", MSG(x), MSG(y), MSG(gen), MSG(alive)); 
     
