@@ -1,0 +1,149 @@
+<DeviceInstances>
+<DevI id="0" type="cell" P="{0,0,0}" />
+<DevI id="1" type="cell" P="{0,1,0}" />
+<DevI id="2" type="cell" P="{0,2,0}" />
+<DevI id="3" type="cell" P="{0,3,0}" />
+<DevI id="4" type="cell" P="{0,0,1}" />
+<DevI id="5" type="cell" P="{1,1,1}" />
+<DevI id="6" type="cell" P="{0,2,1}" />
+<DevI id="7" type="cell" P="{0,3,1}" />
+<DevI id="8" type="cell" P="{0,0,2}" />
+<DevI id="9" type="cell" P="{1,1,2}" />
+<DevI id="10" type="cell" P="{1,2,2}" />
+<DevI id="11" type="cell" P="{0,3,2}" />
+<DevI id="12" type="cell" P="{0,0,3}" />
+<DevI id="13" type="cell" P="{0,1,3}" />
+<DevI id="14" type="cell" P="{0,2,3}" />
+<DevI id="15" type="cell" P="{0,3,3}" />
+</DeviceInstances>
+
+<EdgeInstances>
+<EdgeI path="0:receiver-15:sender" />
+<EdgeI path="0:receiver-12:sender" />
+<EdgeI path="0:receiver-13:sender" />
+<EdgeI path="0:receiver-1:sender" />
+<EdgeI path="0:receiver-5:sender" />
+<EdgeI path="0:receiver-4:sender" />
+<EdgeI path="0:receiver-7:sender" />
+<EdgeI path="0:receiver-3:sender" />
+<EdgeI path="1:receiver-12:sender" />
+<EdgeI path="1:receiver-13:sender" />
+<EdgeI path="1:receiver-14:sender" />
+<EdgeI path="1:receiver-2:sender" />
+<EdgeI path="1:receiver-6:sender" />
+<EdgeI path="1:receiver-5:sender" />
+<EdgeI path="1:receiver-4:sender" />
+<EdgeI path="1:receiver-0:sender" />
+<EdgeI path="2:receiver-13:sender" />
+<EdgeI path="2:receiver-14:sender" />
+<EdgeI path="2:receiver-15:sender" />
+<EdgeI path="2:receiver-3:sender" />
+<EdgeI path="2:receiver-7:sender" />
+<EdgeI path="2:receiver-6:sender" />
+<EdgeI path="2:receiver-5:sender" />
+<EdgeI path="2:receiver-1:sender" />
+<EdgeI path="3:receiver-14:sender" />
+<EdgeI path="3:receiver-15:sender" />
+<EdgeI path="3:receiver-0:sender" />
+<EdgeI path="3:receiver-4:sender" />
+<EdgeI path="3:receiver-8:sender" />
+<EdgeI path="3:receiver-7:sender" />
+<EdgeI path="3:receiver-6:sender" />
+<EdgeI path="3:receiver-2:sender" />
+<EdgeI path="4:receiver-3:sender" />
+<EdgeI path="4:receiver-0:sender" />
+<EdgeI path="4:receiver-1:sender" />
+<EdgeI path="4:receiver-5:sender" />
+<EdgeI path="4:receiver-9:sender" />
+<EdgeI path="4:receiver-8:sender" />
+<EdgeI path="4:receiver-11:sender" />
+<EdgeI path="4:receiver-7:sender" />
+<EdgeI path="5:receiver-0:sender" />
+<EdgeI path="5:receiver-1:sender" />
+<EdgeI path="5:receiver-2:sender" />
+<EdgeI path="5:receiver-6:sender" />
+<EdgeI path="5:receiver-10:sender" />
+<EdgeI path="5:receiver-9:sender" />
+<EdgeI path="5:receiver-8:sender" />
+<EdgeI path="5:receiver-4:sender" />
+<EdgeI path="6:receiver-1:sender" />
+<EdgeI path="6:receiver-2:sender" />
+<EdgeI path="6:receiver-3:sender" />
+<EdgeI path="6:receiver-7:sender" />
+<EdgeI path="6:receiver-11:sender" />
+<EdgeI path="6:receiver-10:sender" />
+<EdgeI path="6:receiver-9:sender" />
+<EdgeI path="6:receiver-5:sender" />
+<EdgeI path="7:receiver-2:sender" />
+<EdgeI path="7:receiver-3:sender" />
+<EdgeI path="7:receiver-4:sender" />
+<EdgeI path="7:receiver-8:sender" />
+<EdgeI path="7:receiver-12:sender" />
+<EdgeI path="7:receiver-11:sender" />
+<EdgeI path="7:receiver-10:sender" />
+<EdgeI path="7:receiver-6:sender" />
+<EdgeI path="8:receiver-7:sender" />
+<EdgeI path="8:receiver-4:sender" />
+<EdgeI path="8:receiver-5:sender" />
+<EdgeI path="8:receiver-9:sender" />
+<EdgeI path="8:receiver-13:sender" />
+<EdgeI path="8:receiver-12:sender" />
+<EdgeI path="8:receiver-15:sender" />
+<EdgeI path="8:receiver-11:sender" />
+<EdgeI path="9:receiver-4:sender" />
+<EdgeI path="9:receiver-5:sender" />
+<EdgeI path="9:receiver-6:sender" />
+<EdgeI path="9:receiver-10:sender" />
+<EdgeI path="9:receiver-14:sender" />
+<EdgeI path="9:receiver-13:sender" />
+<EdgeI path="9:receiver-12:sender" />
+<EdgeI path="9:receiver-8:sender" />
+<EdgeI path="10:receiver-5:sender" />
+<EdgeI path="10:receiver-6:sender" />
+<EdgeI path="10:receiver-7:sender" />
+<EdgeI path="10:receiver-11:sender" />
+<EdgeI path="10:receiver-15:sender" />
+<EdgeI path="10:receiver-14:sender" />
+<EdgeI path="10:receiver-13:sender" />
+<EdgeI path="10:receiver-9:sender" />
+<EdgeI path="11:receiver-6:sender" />
+<EdgeI path="11:receiver-7:sender" />
+<EdgeI path="11:receiver-8:sender" />
+<EdgeI path="11:receiver-12:sender" />
+<EdgeI path="11:receiver-0:sender" />
+<EdgeI path="11:receiver-15:sender" />
+<EdgeI path="11:receiver-14:sender" />
+<EdgeI path="11:receiver-10:sender" />
+<EdgeI path="12:receiver-11:sender" />
+<EdgeI path="12:receiver-8:sender" />
+<EdgeI path="12:receiver-9:sender" />
+<EdgeI path="12:receiver-13:sender" />
+<EdgeI path="12:receiver-1:sender" />
+<EdgeI path="12:receiver-0:sender" />
+<EdgeI path="12:receiver-3:sender" />
+<EdgeI path="12:receiver-15:sender" />
+<EdgeI path="13:receiver-8:sender" />
+<EdgeI path="13:receiver-9:sender" />
+<EdgeI path="13:receiver-10:sender" />
+<EdgeI path="13:receiver-14:sender" />
+<EdgeI path="13:receiver-2:sender" />
+<EdgeI path="13:receiver-1:sender" />
+<EdgeI path="13:receiver-0:sender" />
+<EdgeI path="13:receiver-12:sender" />
+<EdgeI path="14:receiver-9:sender" />
+<EdgeI path="14:receiver-10:sender" />
+<EdgeI path="14:receiver-11:sender" />
+<EdgeI path="14:receiver-15:sender" />
+<EdgeI path="14:receiver-3:sender" />
+<EdgeI path="14:receiver-2:sender" />
+<EdgeI path="14:receiver-1:sender" />
+<EdgeI path="14:receiver-13:sender" />
+<EdgeI path="15:receiver-10:sender" />
+<EdgeI path="15:receiver-11:sender" />
+<EdgeI path="15:receiver-12:sender" />
+<EdgeI path="15:receiver-16:sender" />
+<EdgeI path="15:receiver-0:sender" />
+<EdgeI path="15:receiver-3:sender" />
+<EdgeI path="15:receiver-2:sender" />
+<EdgeI path="15:receiver-14:sender" />
+</EdgeInstances>
