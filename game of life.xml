@@ -81,8 +81,9 @@
                             DEVICESTATE(gen) ++;
 
                             handler_log(2, "updating and chilling");
-                            if (DEVICESTATE(alive)) DEVICESTATE(alive) = false;
-                            else if (!DEVICESTATE(alive)) DEVICESTATE(alive) = true;
+                            if (DEVICESTATE(alive) && (DEVICESTATE(liveNeighbours[prev]) == 2 || DEVICESTATE(liveNeighbours[prev]) == 3)) DEVICESTATE(alive) = true;
+                            else if (!DEVICESTATE(alive) && DEVICESTATE(liveNeighbours[prev]) == 3) DEVICESTATE(alive) = true;
+                            else DEVICESTATE(alive) = false;
     
                             DEVICESTATE(liveNeighbours[prev]) = 0;
                             DEVICESTATE(pings[prev]) = 0;
@@ -160,7 +161,7 @@
         </DeviceTypes>
     </GraphType>
 
-    <GraphInstance id="gol_instance" graphTypeId="gol_type" P="{5,5,5}">
+    <GraphInstance id="gol_instance" graphTypeId="gol_type" P="{64,5,5}">
         <DeviceInstances>
             <DevI id="0" type="cell" P="{0,0,0}" />
             <DevI id="1" type="cell" P="{0,1,0}" />
@@ -178,9 +179,9 @@
             <DevI id="13" type="cell" P="{0,1,3}" />
             <DevI id="14" type="cell" P="{0,2,3}" />
             <DevI id="15" type="cell" P="{0,3,3}" />
-            </DeviceInstances>
-            
-            <EdgeInstances>
+        </DeviceInstances>
+
+        <EdgeInstances>
             <EdgeI path="0:receiver-15:sender" />
             <EdgeI path="0:receiver-12:sender" />
             <EdgeI path="0:receiver-13:sender" />
@@ -309,6 +310,6 @@
             <EdgeI path="15:receiver-3:sender" />
             <EdgeI path="15:receiver-2:sender" />
             <EdgeI path="15:receiver-14:sender" />
-            </EdgeInstances>
+        </EdgeInstances>
     </GraphInstance>
 </Graphs>
