@@ -5,7 +5,7 @@ import sys
 g = []
 G = {}
 
-with open(sys.argv[1],'r') as f:
+with open(sys.argv[2],'r') as f:
     lines = map(methodcaller('strip', '\n'), f.readlines())
     data = list(map(methodcaller('split', ','), lines))
     
@@ -19,7 +19,7 @@ with open(sys.argv[1],'r') as f:
             G[i[2]] = []
             
         G[i[2]].append(i)
-        
+
 def generate_grid(i):
     data = sorted(G[i], key = lambda x: (-x[1], -x[0]))
     X = data[0][0] + 1
@@ -32,7 +32,7 @@ def generate_grid(i):
     
     return grid
     
-print(generate_grid(0))
+print(generate_grid(int(sys.argv[1])))
 
 
     
