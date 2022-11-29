@@ -160,7 +160,7 @@
         </DeviceTypes>
     </GraphType>
 
-    <GraphInstance id="gol_instance" graphTypeId="gol_type" P="{64,5,5}">
+    <GraphInstance id="gol_instance" graphTypeId="gol_type" P="{64,10,10}">
         <DeviceInstances>
             <DevI id="0" type="cell" P="{0,0,0}" />
             <DevI id="1" type="cell" P="{0,1,0}" />
