@@ -1,10 +1,11 @@
 from operator import methodcaller
 import numpy as np
+import sys
 
 g = []
 G = {}
 
-with open('output.txt','r') as f:
+with open(sys.argv[1],'r') as f:
     lines = map(methodcaller('strip', '\n'), f.readlines())
     data = list(map(methodcaller('split', ','), lines))
     
