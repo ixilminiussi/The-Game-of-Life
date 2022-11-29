@@ -21,7 +21,7 @@ id = 0
 ##############
 
 def right(id):
-    if id +1 % X == 0:
+    if (id +1) % X == 0:
         return id - X +1
     return id +1
     
@@ -32,7 +32,7 @@ def left(id):
 
 def top(id):
     if id < X:
-        return id + (X * (Y -1))
+        return id + X * (Y -1)
     return id - X
 
 def bottom(id):
