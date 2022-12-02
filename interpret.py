@@ -33,7 +33,3 @@ def generate_grid(i):
     return grid
     
 print(generate_grid(int(sys.argv[1])))
-
-
-    
-
